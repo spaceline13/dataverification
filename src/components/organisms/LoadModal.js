@@ -26,7 +26,7 @@ const LoadModal = ({ show, setShow, user }) => {
     };
 
     const handleLoad = () => {
-        fetch('http://localhost:5035/api/curation/' + selectedCuration._id)
+        fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}:5035/api/curation/${selectedCuration._id}`)
             .then(res => res.json())
             .then(json => {
                 if (json.success) {
@@ -37,7 +37,7 @@ const LoadModal = ({ show, setShow, user }) => {
     };
     useEffect(() => {
         if (user) {
-            fetch('http://localhost:5035/api/user-curations', {
+            fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}:5035/api/user-curations`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',

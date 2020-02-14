@@ -24,7 +24,7 @@ const SaveModal = ({ show, setShow, user }) => {
         dispatch(setName(event.target.value));
     };
     const handleSave = () => {
-        fetch('http://localhost:5035/api/curation', {
+        fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}:5035/api/curation`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
