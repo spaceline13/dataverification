@@ -1,15 +1,25 @@
 import {
     ADD_HAZARDS,
     ADD_INCIDENTS,
-    ADD_INCIDENTS_PAGES_LOADED, ADD_PRODUCTS, REMOVE_HAZARDS, REMOVE_PRODUCTS,
-    SET_COMMUNITY, SET_DESCRIPTIONS, SET_FETCHING_INCIDENTS, SET_HAZARDS,
+    ADD_INCIDENTS_PAGES_LOADED,
+    ADD_PRODUCTS,
+    LOAD_CURATION,
+    REMOVE_HAZARDS,
+    REMOVE_PRODUCTS,
+    SET_COMMUNITY,
+    SET_DESCRIPTIONS,
+    SET_FETCHING_INCIDENTS,
+    SET_HAZARDS,
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
-    SET_PRODUCTS, SET_TITLES
+    SET_NAME,
+    SET_PRODUCTS,
+    SET_TITLES,
 } from '../actionTypes';
 
 const initialState = {
     community: null,
+    name: '',
     incidents: [],
     products: [],
     hazards: [],
@@ -23,11 +33,22 @@ const initialState = {
 
 const main = (state = initialState, action) => {
     switch (action.type) {
+        case LOAD_CURATION: {
+            const { curationState } = action.payload;
+            return curationState;
+        }
         case SET_COMMUNITY: {
             const { community } = action.payload;
             return {
                 ...state,
                 community,
+            };
+        }
+        case SET_NAME: {
+            const { name } = action.payload;
+            return {
+                ...state,
+                name,
             };
         }
         case SET_INCIDENTS: {
@@ -113,16 +134,22 @@ const main = (state = initialState, action) => {
             const incidents = [...state.incidents];
             const products = { ...state.products };
             const hazards = { ...state.hazards };
+            const titles = { ...state.titles };
+            const descriptions = { ...state.descriptions };
             incidentsToAdd.forEach(incident => {
                 incidents.push({ id: incident.id, title: incident.title, description: incident.description });
                 products[incident.id] = incident.products.map(product => ({ original: product, foodakai: null }));
                 hazards[incident.id] = incident.hazards.map(hazard => ({ original: hazard, foodakai: null }));
+                titles[incident.id] = incident.title;
+                descriptions[incident.id] = incident.description;
             });
             return {
                 ...state,
                 incidents,
                 products,
                 hazards,
+                titles,
+                descriptions,
             };
         }
         case ADD_PRODUCTS: {
@@ -155,7 +182,7 @@ const main = (state = initialState, action) => {
             const { incidentsPagesLoaded } = action.payload;
             return {
                 ...state,
-                incidentsPagesLoaded: [...state.incidentsPagesLoaded, incidentsPagesLoaded]
+                incidentsPagesLoaded: [...state.incidentsPagesLoaded, incidentsPagesLoaded],
             };
         }
         case REMOVE_PRODUCTS: {

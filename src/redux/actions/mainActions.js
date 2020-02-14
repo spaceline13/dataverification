@@ -2,17 +2,30 @@ import {
     ADD_HAZARDS,
     ADD_INCIDENTS,
     ADD_INCIDENTS_PAGES_LOADED,
-    ADD_PRODUCTS,
+    ADD_PRODUCTS, LOAD_CURATION,
     REMOVE_HAZARDS,
     REMOVE_PRODUCTS,
     SET_COMMUNITY, SET_DESCRIPTIONS,
     SET_FETCHING_INCIDENTS,
     SET_HAZARDS,
     SET_INCIDENTS,
-    SET_INCIDENTS_COUNT,
-    SET_INCIDENTS_COUNTS_PER_YEAR,
+    SET_INCIDENTS_COUNT, SET_NAME,
     SET_PRODUCTS, SET_TITLES,
 } from '../actionTypes';
+
+const loadCuration = curationState => ({
+    type: LOAD_CURATION,
+    payload: {
+        curationState,
+    },
+});
+
+const setName = name => ({
+    type: SET_NAME,
+    payload: {
+        name,
+    },
+});
 
 const setCommunity = community => ({
     type: SET_COMMUNITY,
@@ -119,6 +132,8 @@ const removeHazards = (hazard, incident_id) => ({
 });
 
 export {
+    loadCuration,
+    setName,
     addIncidents,
     addIncidentsPagesLoaded,
     setFetchingIncidents,

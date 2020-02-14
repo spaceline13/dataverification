@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { Loader } from 'react-loaders';
 // for loader
 import '../../../node_modules/loaders.css/loaders.css';
@@ -20,10 +20,12 @@ import {
 import RightClickMenu from '../organisms/RightClickMenu';
 import { useAuth0 } from '../molecules/Auth0Wrapper';
 import withCheckCommunity from '../molecules/withCheckCommunity';
-import 'react-virtualized/styles.css';
 import { PAGE_SIZE } from '../../consts';
-import logo from '../../static/images/logo.png';
-import { getFetchingIncidents } from '../../redux/selectors/mainSelectors';
+import {getFetchingIncidents, getIncidents} from '../../redux/selectors/mainSelectors';
+import Header from "../organisms/Header";
+import {getSelectedRemoteProducts} from "../../redux/selectors/filterSelectors";
+import {setOriginalSources, setRemoteProducts} from "../../redux/actions/filterActions";
+import Filters from "../organisms/Filters";
 
 let initialized = false;
 
@@ -31,21 +33,38 @@ const HomePage = () => {
     const dispatch = useDispatch();
     const { user } = useAuth0();
     const fetchingIncidents = useSelector(getFetchingIncidents);
+    const [currentPage, setCurrentPage] = useState(0);
+    const incidents = useSelector(getIncidents);
 
-    const handleAskForMoreIncidents = page => {
-        fetchIncidentsIncludingUnpublished('', PAGE_SIZE, page, true, null, null, ({ res }) => {
+    const pageItemsCount = 8;
+    const [currentPageItems, setCurrentPageItems] = useState([]);
+
+    const fetchFiltered = (comingFrom, product, source) => {
+        dispatch(setFetchingIncidents(true));
+        fetchIncidentsIncludingUnpublished({ product, source, comingFrom }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
+            dispatch(setIncidents(res));
+            dispatch(setIncidentsCount(count));
+            dispatch(addIncidentsPagesLoaded(0));
+            dispatch(setFetchingIncidents(false));
+            if (filters.remoteProducts) dispatch(setRemoteProducts(filters.remoteProducts));
+            if (filters.originalSources) dispatch(setOriginalSources(filters.originalSources));
+        });
+    };
+
+    useEffect(() => {
+        // set items to display for current page (slice of the initial array)
+        setCurrentPageItems(incidents.slice(currentPage * pageItemsCount, currentPage * pageItemsCount + pageItemsCount));
+    }, [incidents, currentPage]);
+
+    const handleAskForMoreIncidents = (page, product, source) => {
+        fetchIncidentsIncludingUnpublished({ product, source }, PAGE_SIZE, page, true, null, null, ({ res }) => {
             dispatch(addIncidents(res));
             dispatch(addIncidentsPagesLoaded(page));
         });
     };
 
     if (!initialized) {
-        fetchIncidentsIncludingUnpublished('', PAGE_SIZE, 0, true, null, null, ({ res, count }) => {
-            dispatch(setIncidents(res));
-            dispatch(setIncidentsCount(count));
-            dispatch(addIncidentsPagesLoaded(0));
-            dispatch(setFetchingIncidents(false));
-        });
+        fetchFiltered();
         initialized = true;
     }
     if (initialized) {
@@ -59,14 +78,13 @@ const HomePage = () => {
                     <>
                         {user ? (
                             <>
+                                <Header onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} user={user} />
+                                <Filters refreshDropdowns={fetchFiltered} />
                                 <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
-                                    <div style={{ float: 'left', fontSize: '30px', margin: '10px 0px', fontFamily: 'sans-serif', color: '#337ab7' }}>
-                                        <img src={logo} style={{ width: '80px' }} />
-                                        <span style={{ position: 'relative', top: '6px' }}>Data Curation tool</span>
-                                    </div>
-                                    <IncidentsTable color={'#589345'} onLoadMorePages={handleAskForMoreIncidents} />
+                                    <IncidentsTable currentPageItems={currentPageItems} />
                                 </MenuProvider>
                                 <RightClickMenu />
+                                <Header isFooter onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />
                             </>
                         ) : (
                             <center> Please Log In to use the app </center>

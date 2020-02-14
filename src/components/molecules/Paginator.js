@@ -15,7 +15,7 @@ const Paginator = ({ currentPage, totalPages, handlePageClick, pagesRange, pages
         <ReactPaginate
             activeClassName={'active'}
             breakLabel={<span>...</span>}
-            containerClassName={'pagination pull-right'}
+            containerClassName={'pagination'}
             disableInitialCallback={true}
             forcePage={currentPage}
             marginPagesDisplayed={pagesAfterBreak ? pagesAfterBreak : 0}

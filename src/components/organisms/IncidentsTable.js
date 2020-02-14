@@ -1,58 +1,23 @@
-/* This Table is made to work directly with the results that the DataPlatform API returns (hits.hits)
-	It does't need any manipulation form Selectors or Formatters
-	It assumes that the data is of form: items(array)._source...
- */
-
-import Box from '@material-ui/core/Box';
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import ShowMoreText from 'react-show-more-text';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Text from '../atoms/Text';
-import Paginator from '../molecules/Paginator';
-import { PAGE_SIZE } from '../../consts';
 import {
     getDescriptions,
     getHazards,
-    getIncidents,
-    getIncidentsCount,
-    getIncidentsPagesLoaded,
     getProducts, getTitles
 } from '../../redux/selectors/mainSelectors';
 import RemoteSelect from '../molecules/RemoteSelect';
 import {removeHazards, removeProducts, setHazards, setProducts} from '../../redux/actions/mainActions';
 import { fetchAnnotationTermsWithCallback } from '../../controllers/AnnotationController';
 
-const IncidentsTable = ({ onLoadMorePages, color }) => {
+const IncidentsTable = ({ currentPageItems }) => {
     const dispatch = useDispatch();
-    const incidents = useSelector(getIncidents);
     const products = useSelector(getProducts);
     const hazards = useSelector(getHazards);
     const titles = useSelector(getTitles);
     const descriptions = useSelector(getDescriptions);
-    const count = useSelector(getIncidentsCount);
-    const pagesLoaded = useSelector(getIncidentsPagesLoaded);
-
-    const pageItemsCount = 8;
-    const [currentPage, setCurrentPage] = useState(0);
-    const [currentPageItems, setCurrentPageItems] = useState([]);
-    const totalPages = Math.ceil(count / pageItemsCount);
-
-    useEffect(() => {
-        // set items to display for current page (slice of the initial array)
-        setCurrentPageItems(incidents.slice(currentPage * pageItemsCount, currentPage * pageItemsCount + pageItemsCount));
-    }, [incidents, currentPage]);
-
-    const handlePageClick = page => {
-        setCurrentPage(page.selected);
-        const pageToAskDataPlatform = Math.floor((page.selected + 1) / (PAGE_SIZE / pageItemsCount)); // ex. 1 = first 100 incidents. 2 = 100-200 incidents etc.
-        // if DataPlatform page has not been loaded, fetch data
-        if (!pagesLoaded.includes(pageToAskDataPlatform)) {
-            if (onLoadMorePages) {
-                onLoadMorePages(pageToAskDataPlatform);
-            }
-        }
-    };
 
     const handleEditProduct = (incident_id, product, foodakaiMapping) => {
         const selectedProduct = products[incident_id].find(pr => pr.original === product.original);
@@ -79,33 +44,30 @@ const IncidentsTable = ({ onLoadMorePages, color }) => {
 
     return (
         <div>
-            {totalPages > 1 ? (
-                <center>
-                    <Paginator currentPage={currentPage} handlePageClick={handlePageClick} totalPages={totalPages} extraProps={color ? { containerClassName: `pagination pull-right ${color}` } : {}} />
-                </center>
-            ) : (
-                <Box mt={'43px'} />
-            )}
             <table className="table table-hover-dark table-striped" style={{ color: '#636971' }}>
                 <thead>
                     <tr>
                         <th width={'200px'}>Title</th>
-                        <th width={'700px'}>Description</th>
-                        <th width={'250px'}>Product</th>
-                        <th width={'250px'}>Hazard</th>
+                        <th width={'800px'}>Description</th>
+                        <th>Product</th>
+                        <th>Hazard</th>
+                        <th width={'20px'}><i className="fas fa-check"></i></th>
                     </tr>
                 </thead>
                 <tbody>
                     {currentPageItems.map((incident, indexI) => {
+                        const checked =
+                            hazards[incident.id].length > 0 && !hazards[incident.id].find(hz => !hz.foodakai) && products[incident.id].length > 0 && !products[incident.id].find(pr => !pr.foodakai);
+                        const trStyling = checked ? { padding: '20px 0px', background: 'rgba(113,195,80,0.2)' } : { padding: '20px 0px' };
                         return (
-                            <tr key={indexI} style={{ padding: '20px 0px' }}>
+                            <tr key={indexI} style={trStyling}>
                                 <td data-id={incident.id} data-field={'title'}>
                                     <Text>{titles[incident.id]}</Text>
                                 </td>
                                 <td data-id={incident.id} data-field={'description'}>
                                     <Text>
                                         {descriptions[incident.id] && (
-                                            <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass="" expanded={false} width={'670'}>
+                                            <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass="" expanded={false} width={'770'}>
                                                 {descriptions[incident.id]}
                                             </ShowMoreText>
                                         )}
@@ -115,7 +77,7 @@ const IncidentsTable = ({ onLoadMorePages, color }) => {
                                     <Text>
                                         {products[incident.id].map((product, index) => (
                                             <div key={index}>
-                                                <span>{product.original}</span>
+                                                <Text inline>{product.original}</Text>
                                                 {' : '}
                                                 <RemoteSelect
                                                     item={product}
@@ -131,7 +93,7 @@ const IncidentsTable = ({ onLoadMorePages, color }) => {
                                     <Text>
                                         {hazards[incident.id].map((hazard, index) => (
                                             <div key={index}>
-                                                <span>{hazard.original}</span>
+                                                <Text inline>{hazard.original}</Text>
                                                 {' : '}
                                                 <RemoteSelect
                                                     item={hazard}
@@ -142,6 +104,13 @@ const IncidentsTable = ({ onLoadMorePages, color }) => {
                                             </div>
                                         ))}
                                     </Text>
+                                </td>
+                                <td>
+                                    {checked ? (
+                                        <i className="fas fa-check-circle" style={{ color: '#2d7543' }} />
+                                    ) : (
+                                        <i className="fas fa-times-circle" />
+                                    )}
                                 </td>
                             </tr>
                         );

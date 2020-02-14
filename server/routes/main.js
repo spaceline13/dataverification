@@ -1,12 +1,20 @@
 import express from 'express';
 
-import { createCause, deleteCause, getAllCause, getSingleCause, updateCause } from '../controllers/cause';
+import {
+    createCuration,
+    deleteCuration,
+    getAllCurations,
+    getSingleCuration,
+    getUserCurations,
+    updateCuration
+} from '../controllers/curation';
 
 const router = express.Router();
-router.post('/causes', createCause);
-router.get('/events', getAllCause);
-router.get('/cause/:causeId', getSingleCause);
-router.patch('/cause/:causeId', updateCause);
-router.delete('/cause/:causeId', deleteCause);
+router.post('/curation', createCuration);
+router.get('/curations', getAllCurations);
+router.post('/user-curations', getUserCurations);
+router.get('/curation/:curationId', getSingleCuration);
+router.patch('/curation/:curationId', updateCuration);
+router.delete('/curation/:curationId', deleteCuration);
 
 export default router;

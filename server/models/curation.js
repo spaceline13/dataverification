@@ -1,14 +1,18 @@
 import mongoose from 'mongoose';
 mongoose.Promise = global.Promise;
-const causeSchema = new mongoose.Schema({
+const curationSchema = new mongoose.Schema({
     _id: mongoose.Schema.Types.ObjectId,
-    title: {
+    user: {
         type: String,
         required: true,
     },
-    description: {
+    name: {
         type: String,
+        required: true,
+    },
+    data: {
+        type: Object,
         required: true,
     },
 });
-export default mongoose.model('Cause', causeSchema);
+export default mongoose.model('Curation', curationSchema);
