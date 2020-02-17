@@ -26,6 +26,7 @@ import Header from "../organisms/Header";
 import {getSelectedRemoteProducts} from "../../redux/selectors/filterSelectors";
 import {setOriginalSources, setRemoteProducts} from "../../redux/actions/filterActions";
 import Filters from "../organisms/Filters";
+import LogoContentsTemplate from "../templates/LogoContentsTemplate";
 
 let initialized = false;
 
@@ -69,29 +70,31 @@ const HomePage = () => {
     }
     if (initialized) {
         return (
-            <div className="App">
-                {fetchingIncidents ? (
-                    <center>
-                        <Loader type={'line-scale'} active color={'#003571'} />
-                    </center>
-                ) : (
-                    <>
-                        {user ? (
-                            <>
-                                <Header onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} user={user} />
-                                <Filters refreshDropdowns={fetchFiltered} />
-                                <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
-                                    <IncidentsTable currentPageItems={currentPageItems} />
-                                </MenuProvider>
-                                <RightClickMenu />
-                                <Header isFooter onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />
-                            </>
-                        ) : (
-                            <center> Please Log In to use the app </center>
-                        )}
-                    </>
-                )}
-            </div>
+            <LogoContentsTemplate>
+                <div className="App">
+                    {fetchingIncidents ? (
+                        <center>
+                            <Loader type={'line-scale'} active color={'#003571'} />
+                        </center>
+                    ) : (
+                        <>
+                            {user ? (
+                                <>
+                                    <Header onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} user={user} />
+                                    <Filters refreshDropdowns={fetchFiltered} />
+                                    <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
+                                        <IncidentsTable currentPageItems={currentPageItems} />
+                                    </MenuProvider>
+                                    <RightClickMenu />
+                                    <Header isFooter onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />
+                                </>
+                            ) : (
+                                <center> Please Log In to use the app </center>
+                            )}
+                        </>
+                    )}
+                </div>
+            </LogoContentsTemplate>
         );
     } else {
         return <span />;

@@ -6,12 +6,12 @@ import Container from '@material-ui/core/Container/Container';
 import Header from '../molecules/Header';
 
 const LogoContentsTemplate = ({ children, logo }) => (
-    <Box display={'flex'} flexDirection={'column'} height={'100%'} overflow={'hidden'}>
+    <Box display={'flex'} flexDirection={'column'} height={'auto'} overflow={'hidden'}>
         <Box flex={'0 0 auto'}>
             <Header logo={logo} />
         </Box>
         <Box flex={'1 1 auto'} overflow={'auto'}>
-            <Container>{children}</Container>
+            {children}
         </Box>
     </Box>
 );

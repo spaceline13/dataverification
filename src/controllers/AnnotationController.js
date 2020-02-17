@@ -1,4 +1,7 @@
-const ANNOTATION_ENDPOINT = window.location.protocol === 'http:' ? 'http://148.251.22.254:8080/nlp-api-1.0/ner/annotate?smart-stopwords=true&vocabulary=fdk_' : 'https://148.251.22.254:8080/nlp-api-1.0/ner/annotate?smart-stopwords=true&vocabulary=fdk_';
+const ANNOTATION_ENDPOINT =
+    window.location.protocol === 'http:'
+        ? 'http://148.251.22.254:8080/nlp-api-1.0/ner/annotate?smart-stopwords=true&vocabulary=fdk_'
+        : 'https://148.251.22.254:8080/nlp-api-1.0/ner/annotate?smart-stopwords=true&vocabulary=fdk_';
 
 export const fetchAnnotationTerms = async (term, vocabulary) => {
     const response = await fetch(ANNOTATION_ENDPOINT + vocabulary, {
