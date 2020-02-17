@@ -22,6 +22,7 @@ const RestrictedLengthChip = ({ label, onDelete }) => {
 			data-trigger='hover'
 			title={label}
 			ref={ref}
+			style={{ padding: '2px' }}
 		>
 			<Chip
 				key={label}
