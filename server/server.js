@@ -11,7 +11,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
 app.use(
     cors({
-        origin: ['http://curate.foodakai.com', 'http://localhost:3010'],
+        origin: ['https://curate.foodakai.com', 'http://localhost:3010'],
     }),
 );
 
