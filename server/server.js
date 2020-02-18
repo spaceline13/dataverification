@@ -9,7 +9,11 @@ const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(logger('dev'));
-app.use(cors());
+app.use(
+    cors({
+        origin: ['http://curate.foodakai.com', 'http://localhost:3010'],
+    }),
+);
 
 // set up mongoose
 mongoose.connect('mongodb://localhost/data-curation')
