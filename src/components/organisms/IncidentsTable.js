@@ -57,7 +57,7 @@ const IncidentsTable = ({ currentPageItems }) => {
                 <tbody>
                     {currentPageItems.map((incident, indexI) => {
                         const checked =
-                            hazards[incident.id].length > 0 && !hazards[incident.id].find(hz => !hz.foodakai) && products[incident.id].length > 0 && !products[incident.id].find(pr => !pr.foodakai);
+                            hazards[incident.id] && hazards[incident.id].length > 0 && !hazards[incident.id].find(hz => !hz.foodakai) && products[incident.id] && products[incident.id].length > 0 && !products[incident.id].find(pr => !pr.foodakai);
                         const trStyling = checked ? { padding: '20px 0px', background: 'rgba(113,195,80,0.2)' } : { padding: '20px 0px' };
                         return (
                             <tr key={indexI} style={trStyling}>
@@ -75,7 +75,7 @@ const IncidentsTable = ({ currentPageItems }) => {
                                 </td>
                                 <td data-id={incident.id}>
                                     <Text>
-                                        {products[incident.id].map((product, index) => (
+                                        {products[incident.id] && products[incident.id].map((product, index) => (
                                             <div key={index}>
                                                 <Text inline>{product.original}</Text>
                                                 {' : '}
@@ -91,7 +91,7 @@ const IncidentsTable = ({ currentPageItems }) => {
                                 </td>
                                 <td data-id={incident.id}>
                                     <Text>
-                                        {hazards[incident.id].map((hazard, index) => (
+                                        {hazards[incident.id] && hazards[incident.id].map((hazard, index) => (
                                             <div key={index}>
                                                 <Text inline>{hazard.original}</Text>
                                                 {' : '}

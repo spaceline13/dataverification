@@ -7,6 +7,7 @@ import { setCommunity } from '../../redux/actions/mainActions';
 import { useAuth0 } from '../molecules/Auth0Wrapper';
 import { ROUTE_HOME } from '../../ROUTES';
 import LogoContentsTemplate from '../templates/LogoContentsTemplate';
+import Text from "../atoms/Text";
 
 const LoginPage = () => {
     const dispatch = useDispatch();
@@ -23,7 +24,7 @@ const LoginPage = () => {
             <div>
                 <LogoContentsTemplate>
                     <center>
-                        <img style={{ width: '180px' }} src={'http://dev.k2p.agroknow.com/img/DataIntegrationToolLogo.png'} />
+                        <Text size={'24px'}>Data Curation Tool</Text>
                         <Box>
                             Please{' '}
                             <a style={{ fontWeight: 'bold', color: '#5996a0', cursor: 'pointer' }} onClick={() => loginWithRedirect({})}>
