@@ -23,6 +23,8 @@ const initialState = {
     incidents: [],
     products: [],
     hazards: [],
+    countries: [],
+    suppliers: [],
     titles: [],
     descriptions: [],
 
@@ -56,6 +58,8 @@ const main = (state = initialState, action) => {
             const incidents = [];
             const products = {};
             const hazards = {};
+            const countries = {};
+            const suppliers = {};
             const titles = {};
             const descriptions = {};
 
@@ -63,6 +67,8 @@ const main = (state = initialState, action) => {
                 incidents.push({ id: incident.id });
                 products[incident.id] = incident.products.map(product => ({ original: product, foodakai: null }));
                 hazards[incident.id] = incident.hazards.map(hazard => ({ original: hazard, foodakai: null }));
+                countries[incident.id] = incident.originInfo ? incident.originInfo.map(origin => origin.country) : [];
+                suppliers[incident.id] = incident.suppliers ? incident.suppliers : [];
                 titles[incident.id] = incident.title;
                 descriptions[incident.id] = incident.description;
             });
@@ -72,6 +78,8 @@ const main = (state = initialState, action) => {
                 incidents,
                 products,
                 hazards,
+                countries,
+                suppliers,
                 titles,
                 descriptions,
             };

@@ -4,13 +4,15 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import Text from '../atoms/Text';
 import {
+    getCountries,
     getDescriptions,
     getHazards,
-    getProducts, getTitles
+    getProducts, getSuppliers, getTitles
 } from '../../redux/selectors/mainSelectors';
 import RemoteSelect from '../molecules/RemoteSelect';
 import {removeHazards, removeProducts, setHazards, setProducts} from '../../redux/actions/mainActions';
 import { fetchAnnotationTermsWithCallback } from '../../controllers/AnnotationController';
+import Grid from "@material-ui/core/Grid";
 
 const IncidentsTable = ({ currentPageItems }) => {
     const dispatch = useDispatch();
@@ -18,6 +20,8 @@ const IncidentsTable = ({ currentPageItems }) => {
     const hazards = useSelector(getHazards);
     const titles = useSelector(getTitles);
     const descriptions = useSelector(getDescriptions);
+    const countries = useSelector(getCountries);
+    const suppliers = useSelector(getSuppliers);
 
     const handleEditProduct = (incident_id, product, foodakaiMapping) => {
         const selectedProduct = products[incident_id].find(pr => pr.original === product.original);
@@ -49,8 +53,7 @@ const IncidentsTable = ({ currentPageItems }) => {
                     <tr>
                         <th width={'200px'}>Title</th>
                         <th width={'800px'}>Description</th>
-                        <th>Product</th>
-                        <th>Hazard</th>
+                        <th>Curation Fields</th>
                         <th width={'20px'}><i className="fas fa-check"></i></th>
                     </tr>
                 </thead>
@@ -73,37 +76,61 @@ const IncidentsTable = ({ currentPageItems }) => {
                                         )}
                                     </Text>
                                 </td>
-                                <td data-id={incident.id}>
-                                    <Text>
-                                        {products[incident.id] && products[incident.id].map((product, index) => (
-                                            <div key={index}>
-                                                <Text inline>{product.original}</Text>
-                                                {' : '}
-                                                <RemoteSelect
-                                                    item={product}
-                                                    onChange={(item, value) => handleEditProduct(incident.id, item, value)}
-                                                    searchForAnnotations={(item, cb) => searchAnnotations(item, 'products', cb)}
-                                                />
-                                                <i className="fas fa-times" style={{ cursor: 'pointer' }} onClick={() => handleRemoveProduct(incident.id, product)} />
+                                <td>
+                                    <Grid container>
+                                        <Grid item xs={6}>
+                                            <div data-id={incident.id}>
+                                                <Text><b>Products:</b></Text>
+                                                <Text>
+                                                    {products[incident.id] && products[incident.id].map((product, index) => (
+                                                        <div key={index}>
+                                                            <Text inline>{product.original}</Text>
+                                                            {' : '}
+                                                            <RemoteSelect
+                                                                item={product}
+                                                                onChange={(item, value) => handleEditProduct(incident.id, item, value)}
+                                                                searchForAnnotations={(item, cb) => searchAnnotations(item, 'products', cb)}
+                                                            />
+                                                            <i className="fas fa-times" style={{ cursor: 'pointer' }} onClick={() => handleRemoveProduct(incident.id, product)} />
+                                                        </div>
+                                                    ))}
+                                                </Text>
                                             </div>
-                                        ))}
-                                    </Text>
-                                </td>
-                                <td data-id={incident.id}>
-                                    <Text>
-                                        {hazards[incident.id] && hazards[incident.id].map((hazard, index) => (
-                                            <div key={index}>
-                                                <Text inline>{hazard.original}</Text>
-                                                {' : '}
-                                                <RemoteSelect
-                                                    item={hazard}
-                                                    onChange={(item, value) => handleEditHazard(incident.id, item, value)}
-                                                    searchForAnnotations={(item, cb) => searchAnnotations(item, 'hazards', cb)}
-                                                />
-                                                <i className="fas fa-times" style={{ cursor: 'pointer' }} onClick={() => handleRemoveHazard(incident.id, hazard)} />
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <div>
+                                                <Text><b>Countries:</b></Text>
+                                                {countries[incident.id] && countries[incident.id].map((c, index) => (
+                                                    <span>{c.country}{c.value}</span>
+                                                ))}
                                             </div>
-                                        ))}
-                                    </Text>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <div data-id={incident.id}>
+                                                <Text><b>Hazards:</b></Text>
+                                                <Text>
+                                                    {hazards[incident.id] && hazards[incident.id].map((hazard, index) => (
+                                                        <div key={index}>
+                                                            <Text inline>{hazard.original}</Text>
+                                                            {' : '}
+                                                            <RemoteSelect
+                                                                item={hazard}
+                                                                onChange={(item, value) => handleEditHazard(incident.id, item, value)}
+                                                                searchForAnnotations={(item, cb) => searchAnnotations(item, 'hazards', cb)}
+                                                            />
+                                                            <i className="fas fa-times" style={{ cursor: 'pointer' }} onClick={() => handleRemoveHazard(incident.id, hazard)} />
+                                                        </div>
+                                                    ))}
+                                                </Text>
+                                            </div>
+                                        </Grid>
+                                        <Grid item xs={6}>
+                                            <Text><b>Suppliers:</b></Text>
+                                            {suppliers[incident.id] && suppliers[incident.id].map((s, index) => (
+                                                <span>{s.title}</span>
+                                            ))}
+                                        </Grid>
+                                    </Grid>
                                 </td>
                                 <td>
                                     {checked ? (
