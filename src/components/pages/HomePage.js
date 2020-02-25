@@ -1,32 +1,29 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { Loader } from 'react-loaders';
 // for loader
 import '../../../node_modules/loaders.css/loaders.css';
 import '../../styles/react-paginate.css';
 import '../../styles/main.css';
 
-import {useDispatch, useSelector} from 'react-redux';
+import {toastr} from 'react-redux-toastr'
+// for toaster
+import 'react-redux-toastr/lib/css/react-redux-toastr.min.css'
+
+import { useDispatch, useSelector } from 'react-redux';
 import { MenuProvider } from 'react-contexify';
 
 import { fetchIncidentsIncludingUnpublished } from '../../controllers/IncidentsController';
 import IncidentsTable from '../organisms/IncidentsTable';
-import {
-    addIncidents,
-    addIncidentsPagesLoaded,
-    setFetchingIncidents,
-    setIncidents,
-    setIncidentsCount
-} from '../../redux/actions/mainActions';
+import { addIncidents, addIncidentsPagesLoaded, setFetchingIncidents, setIncidents, setIncidentsCount } from '../../redux/actions/mainActions';
 import RightClickMenu from '../organisms/RightClickMenu';
 import { useAuth0 } from '../molecules/Auth0Wrapper';
 import withCheckCommunity from '../molecules/withCheckCommunity';
 import { PAGE_SIZE } from '../../consts';
-import {getFetchingIncidents, getIncidents} from '../../redux/selectors/mainSelectors';
-import Header from "../organisms/Header";
-import {getSelectedRemoteProducts} from "../../redux/selectors/filterSelectors";
-import {setOriginalSources, setRemoteProducts} from "../../redux/actions/filterActions";
-import Filters from "../organisms/Filters";
-import LogoContentsTemplate from "../templates/LogoContentsTemplate";
+import { getFetchingIncidents, getIncidents } from '../../redux/selectors/mainSelectors';
+import Header from '../organisms/Header';
+import { setOriginalSources, setRemoteProducts } from '../../redux/actions/filterActions';
+import Filters from '../organisms/Filters';
+import LogoContentsTemplate from '../templates/LogoContentsTemplate';
 
 let initialized = false;
 
@@ -40,9 +37,9 @@ const HomePage = () => {
     const pageItemsCount = 8;
     const [currentPageItems, setCurrentPageItems] = useState([]);
 
-    const fetchFiltered = (comingFrom, product, source) => {
+    const fetchFiltered = (comingFrom, product, source, supplier, dateRange) => {
         dispatch(setFetchingIncidents(true));
-        fetchIncidentsIncludingUnpublished({ product, source, comingFrom }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
+        fetchIncidentsIncludingUnpublished({ product, source, comingFrom, supplier, dateRange }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
             dispatch(setIncidents(res));
             dispatch(setIncidentsCount(count));
             dispatch(addIncidentsPagesLoaded(0));
@@ -64,13 +61,52 @@ const HomePage = () => {
         });
     };
 
+    const handleSaveIncident = ({ id, user, title, description, products, hazards, country, supplier }, action, cb) => {
+        if (action === 'add') {
+            //add
+            fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident`, {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ id, user, title, description, products, hazards, country, supplier }),
+            }).then(res => res.json()).then(json => {
+                if (json.success) {
+                    toastr.success('Saved successfully');
+                    if (cb) cb();
+                } else {
+                    toastr.error('Error', json.error);
+                }
+            });
+        } else if (action === 'remove') {
+            //remove
+            fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                }
+            }).then(res => {
+                if (res.ok) {
+                    toastr.success('Removed successfully');
+                    if (cb) cb();
+                } else {
+                    res.json().then(json => {
+                        toastr.error('Error', json.error);
+                    });
+                }
+            });
+        }
+    };
+
     if (!initialized) {
         fetchFiltered();
         initialized = true;
     }
     if (initialized) {
         return (
-            <LogoContentsTemplate>
+            <LogoContentsTemplate pagingProps={{ handleAskForMoreIncidents, currentPage, pageItemsCount, setCurrentPage }} refreshResults={fetchFiltered}>
                 <div className="App">
                     {fetchingIncidents ? (
                         <center>
@@ -80,13 +116,12 @@ const HomePage = () => {
                         <>
                             {user ? (
                                 <>
-                                    <Header onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} user={user} />
                                     <Filters refreshDropdowns={fetchFiltered} />
                                     <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
-                                        <IncidentsTable currentPageItems={currentPageItems} />
+                                        <IncidentsTable currentPageItems={currentPageItems} user={user} onSaveIncident={handleSaveIncident} />
                                     </MenuProvider>
                                     <RightClickMenu />
-                                    <Header isFooter onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />
+                                    <Header isFooter refreshResults={fetchFiltered} onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />
                                 </>
                             ) : (
                                 <center> Please Log In to use the app </center>

@@ -10,9 +10,9 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 
 import Text from '../atoms/Text';
-import { loadCuration } from '../../redux/actions/mainActions';
+import {loadCuration, setLoadingCuration} from '../../redux/actions/filterActions';
 
-const LoadModal = ({ show, setShow, user }) => {
+const LoadModal = ({ show, setShow, user, refreshResults }) => {
     const dispatch = useDispatch();
     const [curations, setCurations] = useState([]);
     const [selectedCuration, setSelectedCuration] = useState();
@@ -26,11 +26,14 @@ const LoadModal = ({ show, setShow, user }) => {
     };
 
     const handleLoad = () => {
+        dispatch(setLoadingCuration(true));
         fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/curation/${selectedCuration._id}`)
             .then(res => res.json())
             .then(json => {
                 if (json.success) {
+                    refreshResults(null, json.curation.data.selectedRemoteProducts, json.curation.data.selectedOriginalSources, json.curation.data.selectedSupplier, json.curation.data.selectedDateRange);
                     dispatch(loadCuration(json.curation.data));
+                    dispatch(setLoadingCuration(false));
                     setShow(false);
                 }
             });

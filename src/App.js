@@ -12,6 +12,7 @@ import { bounceTransition, mapStyles } from './styles/pageAnimationConfig';
 import HomePage from './components/pages/HomePage';
 import LoginPage from './components/pages/LoginPage';
 import configureStore from './redux/config';
+import ReduxToastr from "react-redux-toastr";
 require('dotenv').config();
 
 // Init Redux Store
@@ -36,6 +37,17 @@ const onRedirectCallback = appState => {
 function App() {
     return (
         <Provider store={store}>
+            <ReduxToastr
+                timeOut={3000}
+                newestOnTop={false}
+                preventDuplicates
+                position="top-center"
+                getState={(state) => state.toastr} // This is the default
+                transitionIn="fadeIn"
+                transitionOut="fadeOut"
+                progressBar
+                closeOnToastrClick
+            />
             <Auth0Provider
                 domain={process.env.REACT_APP_AUTH0_DOMAIN}
                 client_id={process.env.REACT_APP_AUTH0_ID}

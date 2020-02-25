@@ -2,30 +2,16 @@ import {
     ADD_HAZARDS,
     ADD_INCIDENTS,
     ADD_INCIDENTS_PAGES_LOADED,
-    ADD_PRODUCTS, LOAD_CURATION,
+    ADD_PRODUCTS,
     REMOVE_HAZARDS,
-    REMOVE_PRODUCTS,
+    REMOVE_PRODUCTS, SET_APPROVED,
     SET_COMMUNITY, SET_DESCRIPTIONS,
     SET_FETCHING_INCIDENTS,
     SET_HAZARDS,
     SET_INCIDENTS,
-    SET_INCIDENTS_COUNT, SET_NAME,
+    SET_INCIDENTS_COUNT,
     SET_PRODUCTS, SET_TITLES,
 } from '../actionTypes';
-
-const loadCuration = curationState => ({
-    type: LOAD_CURATION,
-    payload: {
-        curationState,
-    },
-});
-
-const setName = name => ({
-    type: SET_NAME,
-    payload: {
-        name,
-    },
-});
 
 const setCommunity = community => ({
     type: SET_COMMUNITY,
@@ -95,6 +81,14 @@ const setDescriptions = (incident_id, originalSliceOfText, formattedSliceOfText)
     },
 });
 
+const setApproved = (incident_id, user) => ({
+    type: SET_APPROVED,
+    payload: {
+        incident_id,
+        user,
+    },
+});
+
 const addIncidentsPagesLoaded = incidentsPagesLoaded => ({
     type: ADD_INCIDENTS_PAGES_LOADED,
     payload: {
@@ -132,8 +126,6 @@ const removeHazards = (hazard, incident_id) => ({
 });
 
 export {
-    loadCuration,
-    setName,
     addIncidents,
     addIncidentsPagesLoaded,
     setFetchingIncidents,
@@ -144,6 +136,7 @@ export {
     setDescriptions,
     setProducts,
     setHazards,
+    setApproved,
     addProducts,
     addHazards,
     removeProducts,

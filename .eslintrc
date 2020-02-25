@@ -11,11 +11,10 @@
         "ecmaVersion": 9,
         "sourceType": "module"
     },
-    "plugins": ["prettier", "react", "react-hooks", "import"],
+    "plugins": ["react", "react-hooks", "import"],
     "rules": {
         "react/prop-types": 0,
         "max-len": ["error", {"code":300}],
-        "prettier/prettier": "error",
         "import/no-unresolved": [2, { "commonjs": true }],
         "import/named": 2,
         "import/namespace": 2,
@@ -30,7 +29,6 @@
     },
     "extends": [
         "eslint:recommended",
-        "plugin:prettier/recommended",
         "plugin:react/recommended",
         "plugin:import/errors",
         "plugin:import/warnings"

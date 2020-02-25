@@ -8,8 +8,13 @@ import {
     getUserCurations,
     updateCuration
 } from '../controllers/curation';
+import {createIncident, deleteIncident, getAllIncidents} from '../controllers/incident';
 
 const router = express.Router();
+router.post('/incident', createIncident);
+router.get('/incidents', getAllIncidents);
+router.delete('/incident/:id', deleteIncident);
+
 router.post('/curation', createCuration);
 router.get('/curations', getAllCurations);
 router.post('/user-curations', getUserCurations);

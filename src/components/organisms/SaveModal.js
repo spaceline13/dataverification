@@ -9,13 +9,14 @@ import { TextField } from '@material-ui/core';
 import {useDispatch, useSelector} from 'react-redux';
 
 import Text from '../atoms/Text';
-import { setName } from '../../redux/actions/mainActions';
-import { getMainState } from '../../redux/selectors/mainSelectors';
+import { setName } from '../../redux/actions/filterActions';
+import { getFiltersState } from "../../redux/selectors/filterSelectors";
+import {toastr} from "react-redux-toastr";
 
 const SaveModal = ({ show, setShow, user }) => {
     const dispatch = useDispatch();
 
-    const dataForSave = useSelector(getMainState);
+    const dataForSave = useSelector(getFiltersState);
 
     const handleClose = () => {
         setShow(false);
@@ -38,7 +39,7 @@ const SaveModal = ({ show, setShow, user }) => {
         }).then(res => res.json()).then(json => {
             if (json.success) {
                 setShow(false);
-                alert('Saved successfully');
+                toastr.success('Saved successfully');
             }
         });
     };
@@ -46,10 +47,10 @@ const SaveModal = ({ show, setShow, user }) => {
     return (
         <div>
             <Dialog open={show} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
-                <DialogTitle id="alert-dialog-title">{'Save Curation'}</DialogTitle>
+                <DialogTitle id="alert-dialog-title">{'Save Filters'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
-                        <Text>Please provide a name for your curation</Text>
+                        <Text>Please provide a name for your filters</Text>
                         <TextField onChange={handleNameChange} />
                     </DialogContentText>
                 </DialogContent>

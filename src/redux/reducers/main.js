@@ -3,23 +3,20 @@ import {
     ADD_INCIDENTS,
     ADD_INCIDENTS_PAGES_LOADED,
     ADD_PRODUCTS,
-    LOAD_CURATION,
     REMOVE_HAZARDS,
-    REMOVE_PRODUCTS,
+    REMOVE_PRODUCTS, SET_APPROVED,
     SET_COMMUNITY,
     SET_DESCRIPTIONS,
     SET_FETCHING_INCIDENTS,
     SET_HAZARDS,
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
-    SET_NAME,
     SET_PRODUCTS,
     SET_TITLES,
 } from '../actionTypes';
 
 const initialState = {
     community: null,
-    name: '',
     incidents: [],
     products: [],
     hazards: [],
@@ -35,22 +32,11 @@ const initialState = {
 
 const main = (state = initialState, action) => {
     switch (action.type) {
-        case LOAD_CURATION: {
-            const { curationState } = action.payload;
-            return curationState;
-        }
         case SET_COMMUNITY: {
             const { community } = action.payload;
             return {
                 ...state,
                 community,
-            };
-        }
-        case SET_NAME: {
-            const { name } = action.payload;
-            return {
-                ...state,
-                name,
             };
         }
         case SET_INCIDENTS: {
@@ -64,11 +50,11 @@ const main = (state = initialState, action) => {
             const descriptions = {};
 
             incidentsToSet.forEach(incident => {
-                incidents.push({ id: incident.id });
-                products[incident.id] = incident.products.map(product => ({ original: product, foodakai: null }));
-                hazards[incident.id] = incident.hazards.map(hazard => ({ original: hazard, foodakai: null }));
+                incidents.push({ id: incident.id, date: incident.createdOn });
+                products[incident.id] = incident.machineProducts.map(product => ({ original: product.value, foodakai: null }));
+                hazards[incident.id] = incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: null }));
                 countries[incident.id] = incident.originInfo ? incident.originInfo.map(origin => origin.country) : [];
-                suppliers[incident.id] = incident.suppliers ? incident.suppliers : [];
+                suppliers[incident.id] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.id] = incident.title;
                 descriptions[incident.id] = incident.description;
             });
@@ -116,7 +102,7 @@ const main = (state = initialState, action) => {
         }
         case SET_HAZARDS: {
             const { hazard, incident_id } = action.payload;
-            const hazards = { ...state.products, [incident_id]: hazard };
+            const hazards = { ...state.hazards, [incident_id]: hazard };
             return {
                 ...state,
                 hazards,
@@ -136,7 +122,17 @@ const main = (state = initialState, action) => {
                 incidentsCount,
             };
         }
-
+        case SET_APPROVED: {
+            const { incident_id, user } = action.payload;
+            const incidents = [...state.incidents];
+            const index = incidents.findIndex(incident => incident.id === incident_id);
+            if (user) incidents[index].approvedFrom = user;
+            else delete incidents[index].approvedFrom;
+            return {
+                ...state,
+                incidents,
+            };
+        }
         case ADD_INCIDENTS: {
             const incidentsToAdd = action.payload.incidents;
             const incidents = [...state.incidents];
@@ -145,7 +141,7 @@ const main = (state = initialState, action) => {
             const titles = { ...state.titles };
             const descriptions = { ...state.descriptions };
             incidentsToAdd.forEach(incident => {
-                incidents.push({ id: incident.id, title: incident.title, description: incident.description });
+                incidents.push({ id: incident.id, date: incident.createdOn });
                 products[incident.id] = incident.products.map(product => ({ original: product, foodakai: null }));
                 hazards[incident.id] = incident.hazards.map(hazard => ({ original: hazard, foodakai: null }));
                 titles[incident.id] = incident.title;

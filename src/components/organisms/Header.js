@@ -10,12 +10,16 @@ import Text from "../atoms/Text";
 import SaveModal from "./SaveModal";
 import LoadModal from "./LoadModal";
 import {
-    getRemoteProducts,
     getSelectedOriginalSources,
     getSelectedRemoteProducts
 } from "../../redux/selectors/filterSelectors";
+import {useAuth0} from "../molecules/Auth0Wrapper";
+import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
 
-const Header = ({ setCurrentPage, pageItemsCount, onLoadMorePages, currentPage, isFooter, user }) => {
+const Header = ({ setCurrentPage, refreshResults, pageItemsCount, onLoadMorePages, currentPage, isFooter, logo }) => {
+    const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0();
+
     const pagesLoaded = useSelector(getIncidentsPagesLoaded);
     const count = useSelector(getIncidentsCount);
     const totalPages = Math.ceil(count / pageItemsCount);
@@ -43,7 +47,9 @@ const Header = ({ setCurrentPage, pageItemsCount, onLoadMorePages, currentPage, 
     };
 
     return (
-        <>
+        <Paper padding={'10px'} style={{ borderRadius: '0px' }}>
+            {logo && <img alt={'logo'} src={logo} style={{ height: '50px', margin: '6px 20px' }} />}
+
             <Grid container>
                 <Grid item xs={3}>
                     {!isFooter && (
@@ -72,12 +78,17 @@ const Header = ({ setCurrentPage, pageItemsCount, onLoadMorePages, currentPage, 
                                 <i className="far fa-save"></i> Save
                             </Text>
                         </Button>
+                        <Box display={'inline-block'} margin={'5px'} style={{ float: 'right' }}>
+                            {!isAuthenticated && <Button onClick={() => loginWithRedirect({})}>Log in</Button>}
+
+                            {isAuthenticated && <Button onClick={() => logout({ returnTo: window.location.origin })}>Log out</Button>}
+                        </Box>
                     </div>
                 </Grid>
             </Grid>
             <SaveModal show={showSaveModal} setShow={setShowSaveModal} user={user} />
-            <LoadModal show={showLoadModal} setShow={setShowLoadModal} user={user} />
-        </>
+            <LoadModal show={showLoadModal} setShow={setShowLoadModal} user={user} refreshResults={refreshResults} />
+        </Paper>
     );
 };
 
