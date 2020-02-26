@@ -9,8 +9,14 @@ import {
     updateCuration
 } from '../controllers/curation';
 import {createIncident, deleteIncident, getAllIncidents} from '../controllers/incident';
+import {getProducts} from "../controllers/product";
+import {getHazards} from "../controllers/hazard";
 
 const router = express.Router();
+
+router.get('/products', getProducts);
+router.get('/hazards', getHazards);
+
 router.post('/incident', createIncident);
 router.get('/incidents', getAllIncidents);
 router.delete('/incident/:id', deleteIncident);
