@@ -1,5 +1,6 @@
 import { searchQuery } from './MainController';
 import moment from "moment";
+import {toastr} from "react-redux-toastr";
 
 // Concat an array to a string delimiting with ||. Works for array of strings or array of objects of type: {key:'example'}
 const concatStringsWithOrReducer = (accumulator, currentValue, index) => (index === 0 ? (currentValue.key ? currentValue.key : currentValue) : (accumulator + '||' + (currentValue.key ? currentValue.key : currentValue)));
@@ -57,6 +58,43 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
 
             if (response.filters[comingFrom]) delete response.filters[comingFrom];
             callback(response);
+        }
+    });
+};
+
+export const addIncidentToMongo = ({ id, user, title, description, products, hazards, country, supplier }, cb) => {
+    fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, user, title, description, products, hazards, country, supplier }),
+    }).then(res => res.json()).then(json => {
+        if (json.success) {
+            toastr.success('Saved successfully');
+            if (cb) cb();
+        } else {
+            toastr.error('Error', json.error);
+        }
+    });
+};
+
+export const removeIncidentFromMongo = (id, cb) => {
+    fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident/${id}`, {
+        method: 'DELETE',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        }
+    }).then(res => {
+        if (res.ok) {
+            toastr.success('Removed successfully');
+            if (cb) cb();
+        } else {
+            res.json().then(json => {
+                toastr.error('Error', json.error);
+            });
         }
     });
 };

@@ -91,8 +91,9 @@ const Filters = ({ refreshDropdowns }) => {
                 <Box display={'flex'} alignItems={'flex-end'}
                      style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
                     <SearchSupplier onSelectSupplier={handleSelectSupplier} selectedSupplier={selectedSupplier}/>
-                    <i style={{cursor: 'pointer'}} onClick={() => handleSelectSupplier(null)}
-                       className="fas fa-times"></i>
+                    {selectedSupplier && <i style={{cursor: 'pointer', position: 'relative', top: '-4px' }} onClick={() => handleSelectSupplier(null)}
+                                            className="fas fa-times"></i>
+                    }
                 </Box>
                 <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
                     <Datepicker

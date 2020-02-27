@@ -11,6 +11,7 @@ import Select from '@material-ui/core/Select';
 
 import Text from '../atoms/Text';
 import {loadCuration, setLoadingCuration} from '../../redux/actions/filterActions';
+import {fetchCurationFilters, fetchUserCurations} from "../../controllers/CurationsController";
 
 const LoadModal = ({ show, setShow, user, refreshResults }) => {
     const dispatch = useDispatch();
@@ -27,36 +28,19 @@ const LoadModal = ({ show, setShow, user, refreshResults }) => {
 
     const handleLoad = () => {
         dispatch(setLoadingCuration(true));
-        fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/curation/${selectedCuration._id}`)
-            .then(res => res.json())
-            .then(json => {
-                if (json.success) {
-                    refreshResults(null, json.curation.data.selectedRemoteProducts, json.curation.data.selectedOriginalSources, json.curation.data.selectedSupplier, json.curation.data.selectedDateRange);
-                    dispatch(loadCuration(json.curation.data));
-                    dispatch(setLoadingCuration(false));
-                    setShow(false);
-                }
-            });
+        fetchCurationFilters(selectedCuration, json => {
+            refreshResults(null, json.curation.data.selectedRemoteProducts, json.curation.data.selectedOriginalSources, json.curation.data.selectedSupplier, json.curation.data.selectedDateRange);
+            dispatch(loadCuration(json.curation.data));
+            dispatch(setLoadingCuration(false));
+            setShow(false);
+        });
     };
     useEffect(() => {
         if (user) {
-            fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/user-curations`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    user: user.email,
-                }),
-            })
-                .then(res => res.json())
-                .then(json => {
-                    if (json.success) {
-                        setCurations(json.data);
-                        setShow(false);
-                    }
-                });
+            fetchUserCurations(user, json => {
+                setCurations(json.data);
+                setShow(false);
+            });
         }
     }, [user]);
 

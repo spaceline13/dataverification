@@ -31,9 +31,10 @@ export function getHazards(req, res) {
 
 export const fetchHazardsFromPlatformToMongo = async (page = 0) => {
     const API_KEY = 'db6a04e9-5df3-3f23-8f2a-28b81d1e3aa8';
+    const pageSize = 100;
     const body = {
         apikey: API_KEY,
-        pageSize: 100,
+        pageSize,
         detail: false,
         page,
         entityType: 'hazard'
@@ -54,5 +55,7 @@ export const fetchHazardsFromPlatformToMongo = async (page = 0) => {
     if (hazards && hazards.length > 0) {
         const currPage = ++page;
         setTimeout(() => { fetchHazardsFromPlatformToMongo(currPage) }, 1000);
+    } else {
+        console.log('added ', page, ' pages of ', pageSize, ' hazards');
     }
 };

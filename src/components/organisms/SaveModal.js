@@ -12,6 +12,7 @@ import Text from '../atoms/Text';
 import { setName } from '../../redux/actions/filterActions';
 import { getFiltersState } from "../../redux/selectors/filterSelectors";
 import {toastr} from "react-redux-toastr";
+import {postCreateCuration} from "../../controllers/CurationsController";
 
 const SaveModal = ({ show, setShow, user }) => {
     const dispatch = useDispatch();
@@ -25,22 +26,9 @@ const SaveModal = ({ show, setShow, user }) => {
         dispatch(setName(event.target.value));
     };
     const handleSave = () => {
-        fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/curation`, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                user: user.email,
-                name: dataForSave.name,
-                data: dataForSave,
-            }),
-        }).then(res => res.json()).then(json => {
-            if (json.success) {
-                setShow(false);
-                toastr.success('Saved successfully');
-            }
+        postCreateCuration(user, dataForSave, () => {
+            setShow(false);
+            toastr.success('Saved successfully');
         });
     };
 

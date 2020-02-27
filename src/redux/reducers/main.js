@@ -1,19 +1,20 @@
 import {
-    ADD_HAZARDS,
+    ADD_HAZARD,
     ADD_INCIDENTS,
     ADD_INCIDENTS_PAGES_LOADED,
-    ADD_PRODUCTS,
-    REMOVE_HAZARDS,
-    REMOVE_PRODUCTS, SET_APPROVED,
-    SET_COMMUNITY,
+    ADD_PRODUCT,
+    REMOVE_HAZARD,
+    REMOVE_PRODUCT, SET_APPROVED,
+    SET_COMMUNITY, SET_COUNTRIES_TAXOOMY,
     SET_DESCRIPTIONS,
     SET_FETCHING_INCIDENTS,
-    SET_HAZARDS,
+    REPLACE_HAZARDS, SET_HAZARDS_TAXONOMY,
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
-    SET_PRODUCTS,
-    SET_TITLES,
+    REPLACE_PRODUCTS, SET_PRODUCTS_TAXONOMY,
+    SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD,
 } from '../actionTypes';
+import stringSimilarity  from 'string-similarity';
 
 const initialState = {
     community: null,
@@ -28,6 +29,10 @@ const initialState = {
     fetchingIncidents: true,
     incidentsCount: 0,
     incidentsPagesLoaded: [],
+
+    productsTaxonomy: [],
+    hazardsTaxonomy: [],
+    countriesTaxonomy: []
 };
 
 const main = (state = initialState, action) => {
@@ -50,13 +55,13 @@ const main = (state = initialState, action) => {
             const descriptions = {};
 
             incidentsToSet.forEach(incident => {
-                incidents.push({ id: incident.id, date: incident.createdOn });
-                products[incident.id] = incident.machineProducts.map(product => ({ original: product.value, foodakai: null }));
-                hazards[incident.id] = incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: null }));
-                countries[incident.id] = incident.originInfo ? incident.originInfo.map(origin => origin.country) : [];
-                suppliers[incident.id] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
-                titles[incident.id] = incident.title;
-                descriptions[incident.id] = incident.description;
+                incidents.push({ id: incident.dataId, date: incident.createdOn });
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
+                countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
+                suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
+                titles[incident.dataId] = incident.title;
+                descriptions[incident.dataId] = incident.description;
             });
 
             return {
@@ -66,6 +71,33 @@ const main = (state = initialState, action) => {
                 hazards,
                 countries,
                 suppliers,
+                titles,
+                descriptions,
+            };
+        }
+        case ADD_INCIDENTS: {
+            const incidentsToAdd = action.payload.incidents;
+            const incidents = [...state.incidents];
+            const products = { ...state.products };
+            const hazards = { ...state.hazards };
+            const countries = { ...state.countries };
+            const suppliers = { ...state.suppliers };
+            const titles = { ...state.titles };
+            const descriptions = { ...state.descriptions };
+            incidentsToAdd.forEach(incident => {
+                incidents.push({ id: incident.dataId, date: incident.createdOn });
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
+                countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country) : [];
+                suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
+                titles[incident.dataId] = incident.title;
+                descriptions[incident.dataId] = incident.description;
+            });
+            return {
+                ...state,
+                incidents,
+                products,
+                hazards,
                 titles,
                 descriptions,
             };
@@ -92,17 +124,118 @@ const main = (state = initialState, action) => {
                 titles,
             };
         }
-        case SET_PRODUCTS: {
+        case REPLACE_PRODUCTS: {
+            const { productsArray, incident_id } = action.payload;
+
+            // check incident's products array against Taxonomy and autofill
+            productsArray.forEach(product => {
+                if (!product.foodakai) {
+                    const { bestMatch } = stringSimilarity.findBestMatch(product.original.toLowerCase(), state.productsTaxonomy);
+                    if (bestMatch.rating > 0.9) product.foodakai = bestMatch.target;
+                    console.log(bestMatch);
+                }
+            });
+
+            // remove tags
+            const regex = `(<product>(?!${productsArray[0].original})|(?<!${productsArray[0].original})<\\/product>)`;
+            const title = state.titles[incident_id].replace(new RegExp(regex, 'g'), '');
+            const titles = { ...state.titles, [incident_id]: title };
+            const description = state.descriptions[incident_id].replace(new RegExp(regex, 'g'), '');
+            const descriptions = { ...state.descriptions, [incident_id]: description };
+
+            // new products
+            const products = { ...state.products, [incident_id]: productsArray };
+
+            return {
+                ...state,
+                products,
+                titles,
+                descriptions
+            };
+        }
+        case ADD_PRODUCT: {
             const { product, incident_id } = action.payload;
-            const products = { ...state.products, [incident_id]: product };
+            // already exists, don't add more
+            if (!state.products[incident_id].find(pr => pr.original === product.original)) {
+                // check incident's product against Taxonomy and autofill
+                if (!product.foodakai) {
+                    const { bestMatch } = stringSimilarity.findBestMatch(product.original.toLowerCase(), state.productsTaxonomy);
+                    if (bestMatch.rating > 0.9) product.foodakai = bestMatch.target;
+                    console.log(bestMatch);
+                }
+
+                const products = { ...state.products, [incident_id]: [...state.products[incident_id], product] };
+                return {
+                    ...state,
+                    products,
+                };
+            } else {
+                return state;
+            }
+        }
+        case EDIT_PRODUCT: {
+            const { index, product, incident_id } = action.payload;
+            const incidentProducts = state.products[incident_id];
+            incidentProducts[index] = product;
+            const products = { ...state.products, [incident_id]: incidentProducts };
             return {
                 ...state,
                 products,
             };
         }
-        case SET_HAZARDS: {
+        case REPLACE_HAZARDS: {
+            const { hazardsArray, incident_id } = action.payload;
+
+            // check incident's hazards array against Taxonomy and autofill
+            hazardsArray.forEach(hazard => {
+                if (!hazard.foodakai) {
+                    const { bestMatch } = stringSimilarity.findBestMatch(hazard.original.toLowerCase(), state.hazardsTaxonomy);
+                    if (bestMatch.rating > 0.9) hazard.foodakai = bestMatch.target;
+                    console.log(bestMatch);
+                }
+            });
+
+            //remove tags
+            const regex = `(<hazard>(?!${hazardsArray[0].original})|(?<!${hazardsArray[0].original})<\\/hazard>)`;
+            const title = state.titles[incident_id].replace(new RegExp(regex, 'g'), '');
+            const titles = { ...state.titles, [incident_id]: title };
+            const description = state.descriptions[incident_id].replace(new RegExp(regex, 'g'), '');
+            const descriptions = { ...state.descriptions, [incident_id]: description };
+
+            // new hazards
+            const hazards = { ...state.hazards, [incident_id]: hazardsArray };
+
+            return {
+                ...state,
+                hazards,
+                titles,
+                descriptions
+            };
+        }
+        case ADD_HAZARD: {
             const { hazard, incident_id } = action.payload;
-            const hazards = { ...state.hazards, [incident_id]: hazard };
+            // already exists, don't add more
+            if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
+                // check incident's hazard against Taxonomy and autofill
+                if (!hazard.foodakai) {
+                    const { bestMatch } = stringSimilarity.findBestMatch(hazard.original.toLowerCase(), state.hazardsTaxonomy);
+                    if (bestMatch.rating > 0.9) hazard.foodakai = bestMatch.target;
+                    console.log(bestMatch);
+                }
+                const hazards = { ...state.hazards, [incident_id]: [...state.hazards[incident_id], hazard] };
+                return {
+                    ...state,
+                    hazards,
+                };
+            } else {
+                return state;
+            }
+        }
+        case EDIT_HAZARD: {
+            const { index, hazard, incident_id } = action.payload;
+            const incidentHazards = state.hazards[incident_id];
+            incidentHazards[index] = hazard;
+            const hazards = { ...state.hazards, [incident_id]: incidentHazards };
             return {
                 ...state,
                 hazards,
@@ -133,55 +266,7 @@ const main = (state = initialState, action) => {
                 incidents,
             };
         }
-        case ADD_INCIDENTS: {
-            const incidentsToAdd = action.payload.incidents;
-            const incidents = [...state.incidents];
-            const products = { ...state.products };
-            const hazards = { ...state.hazards };
-            const titles = { ...state.titles };
-            const descriptions = { ...state.descriptions };
-            incidentsToAdd.forEach(incident => {
-                incidents.push({ id: incident.id, date: incident.createdOn });
-                products[incident.id] = incident.products.map(product => ({ original: product, foodakai: null }));
-                hazards[incident.id] = incident.hazards.map(hazard => ({ original: hazard, foodakai: null }));
-                titles[incident.id] = incident.title;
-                descriptions[incident.id] = incident.description;
-            });
-            return {
-                ...state,
-                incidents,
-                products,
-                hazards,
-                titles,
-                descriptions,
-            };
-        }
-        case ADD_PRODUCTS: {
-            const { product, incident_id } = action.payload;
-            // already exists, don't add more
-            if (!state.products[incident_id].find(pr => pr.original === product.original)) {
-                const products = { ...state.products, [incident_id]: [...state.products[incident_id], product] };
-                return {
-                    ...state,
-                    products,
-                };
-            } else {
-                return state;
-            }
-        }
-        case ADD_HAZARDS: {
-            const { hazard, incident_id } = action.payload;
-            // already exists, don't add more
-            if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
-                const hazards = { ...state.hazards, [incident_id]: [...state.hazards[incident_id], hazard] };
-                return {
-                    ...state,
-                    hazards,
-                };
-            } else {
-                return state;
-            }
-        }
+
         case ADD_INCIDENTS_PAGES_LOADED: {
             const { incidentsPagesLoaded } = action.payload;
             return {
@@ -189,7 +274,7 @@ const main = (state = initialState, action) => {
                 incidentsPagesLoaded: [...state.incidentsPagesLoaded, incidentsPagesLoaded],
             };
         }
-        case REMOVE_PRODUCTS: {
+        case REMOVE_PRODUCT: {
             const { incident_id, product } = action.payload;
             // find product in incident's products and remove it from incident's products list
             const listOfSpecficIncidentProducts = state.products[incident_id].filter(pr => !(pr.original === product.original && pr.foodakai === product.foodakai));
@@ -223,7 +308,7 @@ const main = (state = initialState, action) => {
 
             return res;
         }
-        case REMOVE_HAZARDS: {
+        case REMOVE_HAZARD: {
             const { incident_id, hazard } = action.payload;
             // find product in incident's hazards and remove it from incident's hazards list
             const listOfSpecficIncidentHazards = state.hazards[incident_id].filter(hz => !(hz.original === hazard.original && hz.foodakai === hazard.foodakai));
@@ -256,6 +341,29 @@ const main = (state = initialState, action) => {
             else if (titles) res.titles = titles;
 
             return res;
+        }
+
+        // TAXONOMIES
+        case SET_PRODUCTS_TAXONOMY: {
+            const { products } = action.payload;
+            return {
+                ...state,
+                productsTaxonomy: products,
+            };
+        }
+        case SET_HAZARDS_TAXONOMY: {
+            const { hazards } = action.payload;
+            return {
+                ...state,
+                hazardsTaxonomy: hazards,
+            };
+        }
+        case SET_COUNTRIES_TAXOOMY: {
+            const { countries } = action.payload;
+            return {
+                ...state,
+                countriesTaxonomy: countries,
+            };
         }
         default:
             return state;

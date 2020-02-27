@@ -1,16 +1,16 @@
 import {
-    ADD_HAZARDS,
+    ADD_HAZARD,
     ADD_INCIDENTS,
     ADD_INCIDENTS_PAGES_LOADED,
-    ADD_PRODUCTS,
-    REMOVE_HAZARDS,
-    REMOVE_PRODUCTS, SET_APPROVED,
-    SET_COMMUNITY, SET_DESCRIPTIONS,
+    ADD_PRODUCT,
+    REMOVE_HAZARD,
+    REMOVE_PRODUCT, SET_APPROVED,
+    SET_COMMUNITY, SET_COUNTRIES_TAXOOMY, SET_DESCRIPTIONS,
     SET_FETCHING_INCIDENTS,
-    SET_HAZARDS,
+    REPLACE_HAZARDS, SET_HAZARDS_TAXONOMY,
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
-    SET_PRODUCTS, SET_TITLES,
+    REPLACE_PRODUCTS, SET_PRODUCTS_TAXONOMY, SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD,
 } from '../actionTypes';
 
 const setCommunity = community => ({
@@ -27,17 +27,17 @@ const setIncidents = incidents => ({
     },
 });
 
-const setProducts = (product, incident_id) => ({
-    type: SET_PRODUCTS,
+const replaceProducts = (productsArray, incident_id) => ({
+    type: REPLACE_PRODUCTS,
     payload: {
-        product,
+        productsArray,
         incident_id,
     },
 });
-const setHazards = (hazard, incident_id) => ({
-    type: SET_HAZARDS,
+const replaceHazards = (hazardsArray, incident_id) => ({
+    type: REPLACE_HAZARDS,
     payload: {
-        hazard,
+        hazardsArray,
         incident_id,
     },
 });
@@ -96,32 +96,69 @@ const addIncidentsPagesLoaded = incidentsPagesLoaded => ({
     },
 });
 
-const addProducts = (product, incident_id) => ({
-    type: ADD_PRODUCTS,
+const addProduct = (product, incident_id) => ({
+    type: ADD_PRODUCT,
     payload: {
         product,
         incident_id,
     },
 });
-const addHazards = (hazard, incident_id) => ({
-    type: ADD_HAZARDS,
+const editProduct = (index, product, incident_id) => ({
+    type: EDIT_PRODUCT,
+    payload: {
+        index,
+        product,
+        incident_id,
+    },
+});
+const addHazard = (hazard, incident_id) => ({
+    type: ADD_HAZARD,
     payload: {
         hazard,
         incident_id,
     },
 });
-const removeProducts = (product, incident_id) => ({
-    type: REMOVE_PRODUCTS,
+const editHazard = (index, hazard, incident_id) => ({
+    type: EDIT_HAZARD,
+    payload: {
+        index,
+        hazard,
+        incident_id,
+    },
+});
+const removeProduct = (product, incident_id) => ({
+    type: REMOVE_PRODUCT,
     payload: {
         product,
         incident_id,
     },
 });
-const removeHazards = (hazard, incident_id) => ({
-    type: REMOVE_HAZARDS,
+const removeHazard = (hazard, incident_id) => ({
+    type: REMOVE_HAZARD,
     payload: {
         hazard,
         incident_id,
+    },
+});
+
+export const setProductsTaxonomy = products => ({
+    type: SET_PRODUCTS_TAXONOMY,
+    payload: {
+        products,
+    },
+});
+
+export const setHazardsTaxonomy = hazards => ({
+    type: SET_HAZARDS_TAXONOMY,
+    payload: {
+        hazards,
+    },
+});
+
+export const setCountriesTaxonomy = countries => ({
+    type: SET_COUNTRIES_TAXOOMY,
+    payload: {
+        countries,
     },
 });
 
@@ -134,11 +171,13 @@ export {
     setIncidents,
     setTitles,
     setDescriptions,
-    setProducts,
-    setHazards,
+    replaceProducts,
+    replaceHazards,
     setApproved,
-    addProducts,
-    addHazards,
-    removeProducts,
-    removeHazards,
+    addProduct,
+    editProduct,
+    addHazard,
+    editHazard,
+    removeProduct,
+    removeHazard,
 };

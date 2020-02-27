@@ -4,3 +4,15 @@ td {
 .App{
     padding: 10px
 }
+
+.MuiInputLabel-outlined:not(.Mui-focused) {
+    transform: translate(8px, 9px) scale(1)!important
+}
+
+.MuiOutlinedInput-input {
+    padding: 8px 9px!important
+}
+
+.MuiOutlinedInput-adornedEnd {
+    padding-right: 0px!important
+}

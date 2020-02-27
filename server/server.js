@@ -35,13 +35,12 @@ app.get('/', (request, respond) => {
 app.use('/api/', mainRoutes);
 
 
-var harvest = new CronJob('0 0 2 * * 4', function() {
+var harvest = new CronJob('0 0 18 * * 5', function() {
     console.log('---- Harvest Started: ', new Date(), '----');
     eraseProducts();
     fetchProductsFromPlatformToMongo(0);
     eraseHazards();
     fetchHazardsFromPlatformToMongo(0);
-    console.log('---- Harvest Ended: ', new Date(), '----');
 }, null, true, 'Europe/Athens');
 harvest.start();
 

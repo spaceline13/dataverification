@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 export function addProducts(array, page) {
     const products = array.map(product => new Product({ name: product }));
-    return Product.insertMany(products).then(() =>  console.log('products added page: ', page)).catch(error => console.log(error));
+    return Product.insertMany(products).then(() =>  {/*console.log('products added page: ', page)*/}).catch(error => console.log(error));
 }
 
 export function eraseProducts() {
@@ -31,9 +31,10 @@ export function getProducts(req, res) {
 
 export const fetchProductsFromPlatformToMongo = async (page = 0) => {
     const API_KEY = 'db6a04e9-5df3-3f23-8f2a-28b81d1e3aa8';
+    const pageSize = 100;
     const body = {
         apikey: API_KEY,
-        pageSize: 100,
+        pageSize,
         page,
         detail: false,
         entityType: 'product'
@@ -54,5 +55,7 @@ export const fetchProductsFromPlatformToMongo = async (page = 0) => {
     if (products && products.length > 0) {
         const currPage = ++page;
         setTimeout(() => { fetchProductsFromPlatformToMongo(currPage) }, 1000);
+    } else {
+        console.log('added ', page, ' pages of ', pageSize, ' products');
     }
 };

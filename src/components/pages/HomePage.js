@@ -5,16 +5,26 @@ import '../../../node_modules/loaders.css/loaders.css';
 import '../../styles/react-paginate.css';
 import '../../styles/main.css';
 
-import {toastr} from 'react-redux-toastr'
 // for toaster
 import 'react-redux-toastr/lib/css/react-redux-toastr.min.css'
 
 import { useDispatch, useSelector } from 'react-redux';
 import { MenuProvider } from 'react-contexify';
 
-import { fetchIncidentsIncludingUnpublished } from '../../controllers/IncidentsController';
+import {
+    addIncidentToMongo,
+    fetchIncidentsIncludingUnpublished,
+    removeIncidentFromMongo
+} from '../../controllers/IncidentsController';
 import IncidentsTable from '../organisms/IncidentsTable';
-import { addIncidents, addIncidentsPagesLoaded, setFetchingIncidents, setIncidents, setIncidentsCount } from '../../redux/actions/mainActions';
+import {
+    addIncidents,
+    addIncidentsPagesLoaded,
+    setFetchingIncidents, setHazardsTaxonomy,
+    setIncidents,
+    setIncidentsCount,
+    setProductsTaxonomy
+} from '../../redux/actions/mainActions';
 import RightClickMenu from '../organisms/RightClickMenu';
 import { useAuth0 } from '../molecules/Auth0Wrapper';
 import withCheckCommunity from '../molecules/withCheckCommunity';
@@ -24,6 +34,8 @@ import Header from '../organisms/Header';
 import { setOriginalSources, setRemoteProducts } from '../../redux/actions/filterActions';
 import Filters from '../organisms/Filters';
 import LogoContentsTemplate from '../templates/LogoContentsTemplate';
+import {fetchHazardsTaxonomy, fetchProductsTaxonomy} from "../../controllers/TaxonomiesController";
+
 
 let initialized = false;
 
@@ -63,44 +75,20 @@ const HomePage = () => {
 
     const handleSaveIncident = ({ id, user, title, description, products, hazards, country, supplier }, action, cb) => {
         if (action === 'add') {
-            //add
-            fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id, user, title, description, products, hazards, country, supplier }),
-            }).then(res => res.json()).then(json => {
-                if (json.success) {
-                    toastr.success('Saved successfully');
-                    if (cb) cb();
-                } else {
-                    toastr.error('Error', json.error);
-                }
-            });
+            addIncidentToMongo({ id, user, title, description, products, hazards, country, supplier }, cb);
         } else if (action === 'remove') {
-            //remove
-            fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident/${id}`, {
-                method: 'DELETE',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                }
-            }).then(res => {
-                if (res.ok) {
-                    toastr.success('Removed successfully');
-                    if (cb) cb();
-                } else {
-                    res.json().then(json => {
-                        toastr.error('Error', json.error);
-                    });
-                }
-            });
+            removeIncidentFromMongo(id, cb);
         }
     };
 
     if (!initialized) {
+        fetchProductsTaxonomy((products) => {
+            dispatch(setProductsTaxonomy(products));
+        });
+        fetchHazardsTaxonomy((hazards) => {
+           dispatch(setHazardsTaxonomy(hazards));
+        });
+
         fetchFiltered();
         initialized = true;
     }

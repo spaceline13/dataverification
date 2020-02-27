@@ -3,13 +3,28 @@ import ShowMoreText from 'react-show-more-text';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
+import countries from '../../data/countries';
 
 import Text from '../atoms/Text';
-import { getCountries, getDescriptions, getHazards, getProducts, getSuppliers, getTitles } from '../../redux/selectors/mainSelectors';
-import RemoteSelect from '../molecules/RemoteSelect';
-import { removeHazards, removeProducts, setApproved, setHazards, setProducts } from '../../redux/actions/mainActions';
+import {
+    getCountries,
+    getDescriptions,
+    getHazards, getHazardsTaxonomy,
+    getProducts,
+    getProductsTaxonomy,
+    getSuppliers,
+    getTitles
+} from '../../redux/selectors/mainSelectors';
+import {
+    removeHazard,
+    removeProduct,
+    setApproved,
+    editProduct, editHazard
+} from '../../redux/actions/mainActions';
 import { fetchAnnotationTermsWithCallback } from '../../controllers/AnnotationController';
 import moment from "moment";
+import RemoteAutocomplete from "../molecules/RemoteAutocomplete";
+import Box from "@material-ui/core/Box";
 
 const Product = styled.div`
     border: 1px solid #84a3bd;
@@ -42,22 +57,32 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     const descriptions = useSelector(getDescriptions);
     const countries = useSelector(getCountries);
     const suppliers = useSelector(getSuppliers);
+    const productsTaxonomy = useSelector(getProductsTaxonomy);
+    const hazardsTaxonomy = useSelector(getHazardsTaxonomy);
 
     const handleEditProduct = (incident_id, product, foodakaiMapping) => {
-        const selectedProduct = products[incident_id].find(pr => pr.original === product.original);
-        selectedProduct.foodakai = foodakaiMapping;
-        dispatch(setProducts(products[incident_id], incident_id));
+        const selectedIndex = products[incident_id].findIndex(pr => pr.original === product.original);
+        if ( selectedIndex !== -1 ) {
+            products[incident_id][selectedIndex].foodakai = foodakaiMapping;
+            dispatch(editProduct(selectedIndex, products[incident_id][selectedIndex], incident_id));
+        } else {
+            alert('could not find product in incident');
+        }
     };
     const handleEditHazard = (incident_id, hazard, foodakaiMapping) => {
-        const selectedHazard = hazards[incident_id].find(hz => hz.original === hazard.original);
-        selectedHazard.foodakai = foodakaiMapping;
-        dispatch(setHazards(hazards[incident_id], incident_id));
+        const selectedIndex = hazards[incident_id].findIndex(hz => hz.original === hazard.original);
+        if ( selectedIndex !== -1 ) {
+            hazards[incident_id][selectedIndex].foodakai = foodakaiMapping;
+            dispatch(editHazard(selectedIndex, hazards[incident_id][selectedIndex], incident_id));
+        } else {
+            alert('could not find hazard in incident');
+        }
     };
     const handleRemoveProduct = (incident_id, product) => {
-        dispatch(removeProducts(product, incident_id));
+        dispatch(removeProduct(product, incident_id));
     };
     const handleRemoveHazard = (incident_id, hazard) => {
-        dispatch(removeHazards(hazard, incident_id));
+        dispatch(removeHazard(hazard, incident_id));
     };
     const handleApprove = incident_id => {
         onSaveIncident({
@@ -84,6 +109,42 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     const searchAnnotations = (item, vocabulary, cb) => {
         fetchAnnotationTermsWithCallback(item, vocabulary, res => {
             cb(res);
+        });
+    };
+    const filterProductsAutocomplete = (inputText) => {
+        const inputValue = inputText.trim().toLowerCase();
+        const inputLength = inputValue.length;
+        const results = inputLength === 0 ? [] : productsTaxonomy.filter(pr =>
+            pr.toLowerCase().slice(0, inputLength) === inputValue
+        );
+        return ({
+            hits: {
+                hits: results.map(res => (
+                    {
+                        ['_source']: {
+                            title: res
+                        }
+                    }
+                ))
+            }
+        });
+    };
+    const filterHazardsAutocomplete = (inputText) => {
+        const inputValue = inputText.trim().toLowerCase();
+        const inputLength = inputValue.length;
+        const results = inputLength === 0 ? [] : hazardsTaxonomy.filter(pr =>
+            pr.toLowerCase().slice(0, inputLength) === inputValue
+        );
+        return ({
+            hits: {
+                hits: results.map(res => (
+                    {
+                        ['_source']: {
+                            title: res
+                        }
+                    }
+                ))
+            }
         });
     };
 
@@ -135,14 +196,24 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                     {products[incident.id] &&
                                                         products[incident.id].map((product, index) => (
                                                             <Product key={index}>
-                                                                <Text inline>{product.original}</Text>
-                                                                {' : '}
-                                                                <RemoteSelect
-                                                                    item={product}
-                                                                    onChange={(item, value) => handleEditProduct(incident.id, item, value)}
-                                                                    searchForAnnotations={(item, cb) => searchAnnotations(item, 'products', cb)}
-                                                                />
-                                                                <i className="fas fa-times" style={{ cursor: 'pointer' }} onClick={() => handleRemoveProduct(incident.id, product)} />
+                                                                <i className="fas fa-times" style={{
+                                                                    cursor: 'pointer',
+                                                                    position: 'relative',
+                                                                    top: '-3px',
+                                                                    right: '-3px',
+                                                                    float: 'right',
+                                                                    background: '#f9f9f9',
+                                                                    padding: '1px 3px'
+                                                                }} onClick={() => handleRemoveProduct(incident.id, product)} />
+                                                                <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{product.original}</Text>
+                                                                <Box display={'inline-block'}>
+                                                                    <RemoteAutocomplete
+                                                                        variant={'outlined'}
+                                                                        onSelect={(value) => handleEditProduct(incident.id, product, value.title)}
+                                                                        asyncFetchFunction={filterProductsAutocomplete}
+                                                                        placeholder={product.foodakai ? product.foodakai : 'Find product'}
+                                                                    />
+                                                                </Box>
                                                             </Product>
                                                         ))}
                                                 </Text>
@@ -154,10 +225,9 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                     <b>Countries:</b>
                                                 </Text>
                                                 {countries[incident.id] &&
-                                                    countries[incident.id].map((c, index) => (
+                                                    countries[incident.id].map((country) => (
                                                         <span>
-                                                            {c.country}
-                                                            {c.value}
+                                                            {country}
                                                         </span>
                                                     ))}
                                             </div>
@@ -171,14 +241,24 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                     {hazards[incident.id] &&
                                                         hazards[incident.id].map((hazard, index) => (
                                                             <Hazard key={index}>
+                                                                <i className="fas fa-times" style={{
+                                                                    cursor: 'pointer',
+                                                                    position: 'relative',
+                                                                    top: '-3px',
+                                                                    right: '-3px',
+                                                                    float: 'right',
+                                                                    background: '#f9f9f9',
+                                                                    padding: '1px 3px'
+                                                                }} onClick={() => handleRemoveHazard(incident.id, hazard)} />
                                                                 <Text inline>{hazard.original}</Text>
-                                                                {' : '}
-                                                                <RemoteSelect
-                                                                    item={hazard}
-                                                                    onChange={(item, value) => handleEditHazard(incident.id, item, value)}
-                                                                    searchForAnnotations={(item, cb) => searchAnnotations(item, 'hazards', cb)}
-                                                                />
-                                                                <i className="fas fa-times" style={{ cursor: 'pointer' }} onClick={() => handleRemoveHazard(incident.id, hazard)} />
+                                                                <Box display={'inline-block'}>
+                                                                    <RemoteAutocomplete
+                                                                        variant={'outlined'}
+                                                                        onSelect={(value) => handleEditHazard(incident.id, hazard, value.title)}
+                                                                        asyncFetchFunction={filterHazardsAutocomplete}
+                                                                        placeholder={hazard.foodakai ? hazard.foodakai : 'Find hazard'}
+                                                                    />
+                                                                </Box>
                                                             </Hazard>
                                                         ))}
                                                 </Text>

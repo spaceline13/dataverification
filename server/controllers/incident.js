@@ -23,7 +23,7 @@ export function createIncident(req, res) {
 }
 export function getAllIncidents(req, res) {
     Incident.find()
-        .select('_id user title description products hazards country supplier')
+        .select('id user title description products hazards country supplier')
         .then(allIncidents => {
             return res.status(200).json({
                 success: true,

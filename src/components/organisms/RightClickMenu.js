@@ -3,11 +3,11 @@ import { Menu, Item } from 'react-contexify';
 import 'react-contexify/dist/ReactContexify.min.css';
 import { useDispatch } from "react-redux";
 import {
-    addHazards,
-    addProducts,
+    addHazard,
+    addProduct,
     setDescriptions,
-    setHazards,
-    setProducts,
+    replaceHazards,
+    replaceProducts,
     setTitles
 } from "../../redux/actions/mainActions";
 
@@ -69,13 +69,13 @@ const getInfoForIncident = (event, tag) => {
 // create your menu first
 const RightClickMenu = () => {
     const dispatch = useDispatch();
-    const handleAddProducts = ({ event }) => {
+    const handleAddProduct = ({ event }) => {
         // do all the staff needed to get the bellow info
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'product');
 
         // set the new products object to redux store
         const product = { original: selected, foodakai: null };
-        dispatch(addProducts(product, incident_id));
+        dispatch(addProduct(product, incident_id));
 
         // set the annotations to redux store
         if (field === 'title') {
@@ -88,21 +88,22 @@ const RightClickMenu = () => {
         // comments same as above
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'product');
 
-        const product = { original: selected, foodakai: null };
-        dispatch(setProducts(product, incident_id));
-
         if (field === 'title') {
             dispatch(setTitles(incident_id, subText, formatted));
         } else if (field === 'description') {
             dispatch(setDescriptions(incident_id, subText, formatted));
         }
+
+        const product = { original: selected, foodakai: null };
+        dispatch(replaceProducts([product], incident_id));
+
     };
-    const handleAddHazards = ({ event }) => {
+    const handleAddHazard = ({ event }) => {
         // comments same as above
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'hazard');
 
         const hazard = { original: selected, foodakai: null };
-        dispatch(addHazards(hazard, incident_id));
+        dispatch(addHazard(hazard, incident_id));
 
         if (field === 'title') {
             dispatch(setTitles(incident_id, subText, formatted));
@@ -114,20 +115,22 @@ const RightClickMenu = () => {
         // comments same as above
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'hazard');
 
-        const hazard = { original: selected, foodakai: null };
-        dispatch(setHazards(hazard, incident_id));
-
         if (field === 'title') {
             dispatch(setTitles(incident_id, subText, formatted));
         } else if (field === 'description') {
             dispatch(setDescriptions(incident_id, subText, formatted));
         }
+
+        const hazard = { original: selected, foodakai: null };
+
+        dispatch(replaceHazards([hazard], incident_id));
+
     };
     return (
         <Menu id="menu_id">
-            <Item onClick={handleAddProducts}>add to products</Item>
+            <Item onClick={handleAddProduct}>add to products</Item>
             <Item onClick={handleReplaceProducts}>replace products</Item>
-            <Item onClick={handleAddHazards}>add to hazards</Item>
+            <Item onClick={handleAddHazard}>add to hazards</Item>
             <Item onClick={handleReplaceHazards}>replace hazards</Item>
         </Menu>
     );
