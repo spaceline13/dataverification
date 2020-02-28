@@ -7,7 +7,7 @@ import Header from '../organisms/Header';
 const LogoContentsTemplate = ({ children, refreshResults, pagingProps }) => (
     <Box display={'flex'} flexDirection={'column'} height={'auto'} overflow={'hidden'}>
         <Box flex={'0 0 auto'}>
-            <Header refreshResults={refreshResults} onLoadMorePages={pagingProps.handleAskForMoreIncidents} currentPage={pagingProps.currentPage} pageItemsCount={pagingProps.pageItemsCount} setCurrentPage={pagingProps.setCurrentPage} />
+            {pagingProps && <Header refreshResults={refreshResults} onLoadMorePages={pagingProps.handleAskForMoreIncidents} currentPage={pagingProps.currentPage} pageItemsCount={pagingProps.pageItemsCount} setCurrentPage={pagingProps.setCurrentPage} />}
         </Box>
         <Box flex={'1 1 auto'} overflow={'auto'}>
             {children}
