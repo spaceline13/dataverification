@@ -260,7 +260,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                                     background: '#f9f9f9',
                                                                     padding: '1px 3px'
                                                                 }} onClick={() => handleRemoveHazard(incident.id, hazard)} />
-                                                                <Text inline>{hazard.original}</Text>
+                                                                <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{hazard.original}</Text>
                                                                 <Box display={'inline-block'}>
                                                                     <RemoteAutocomplete
                                                                         variant={'outlined'}
