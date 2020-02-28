@@ -62,6 +62,21 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
     });
 };
 
+export const checkIncidentsInMongo = (ids, cb) => {
+    fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/checkIncidents`, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            ids
+        }),
+    }).then(res => res.json()).then(json => {
+        if (cb) cb(json);
+    });
+};
+
 export const addIncidentToMongo = ({ id, user, title, description, products, hazards, country, supplier }, cb) => {
     fetch(`${process.env.REACT_APP_SERVER_ENDPOINT}/api/incident`, {
         method: 'POST',

@@ -39,6 +39,22 @@ export function getAllIncidents(req, res) {
             });
         });
 }
+export function checkForIncidents(req, res) {
+    const { ids } = req.body;
+    Incident.find().where('id').in(ids).exec().then(incidents => {
+        return res.status(200).json({
+            success: true,
+            message: 'Saved incidents for your query',
+            incidents,
+        });
+    }).catch(err => {
+        res.status(500).json({
+            success: false,
+            message: 'Server error. Please try again.',
+            error: err.message,
+        });
+    });
+}
 export function deleteIncident(req, res) {
     const id = req.params;
     Incident.findOneAndDelete(id)

@@ -10,7 +10,7 @@ import {
     REPLACE_HAZARDS, SET_HAZARDS_TAXONOMY,
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
-    REPLACE_PRODUCTS, SET_PRODUCTS_TAXONOMY, SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD,
+    REPLACE_PRODUCTS, SET_PRODUCTS_TAXONOMY, SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD, IMPORT_SAVED_INCIDENTS,
 } from '../actionTypes';
 
 const setCommunity = community => ({
@@ -20,10 +20,11 @@ const setCommunity = community => ({
     },
 });
 
-const setIncidents = incidents => ({
+const setIncidents = (incidents, savedIncidents) => ({
     type: SET_INCIDENTS,
     payload: {
         incidents,
+        savedIncidents,
     },
 });
 

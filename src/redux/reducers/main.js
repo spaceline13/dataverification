@@ -46,6 +46,8 @@ const main = (state = initialState, action) => {
         }
         case SET_INCIDENTS: {
             const incidentsToSet = action.payload.incidents;
+            const previouslySavedIncidents = action.payload.savedIncidents;
+            console.log(previouslySavedIncidents);
             const incidents = [];
             const products = {};
             const hazards = {};
@@ -63,6 +65,19 @@ const main = (state = initialState, action) => {
                 titles[incident.dataId] = incident.title;
                 descriptions[incident.dataId] = incident.description;
             });
+
+            if (previouslySavedIncidents) {
+                previouslySavedIncidents.forEach(incident => {
+                    const stateIncident = incidents.find(sti => sti.id === incident.id);
+                    stateIncident.approvedFrom = incident.user;
+                    products[incident.id] = incident.products;
+                    hazards[incident.id] = incident.hazards;
+                    countries[incident.id] = incident.country;
+                    suppliers[incident.id] = incident.supplier;
+                    titles[incident.id] = incident.title;
+                    descriptions[incident.id] = incident.description;
+                });
+            }
 
             return {
                 ...state,
@@ -98,6 +113,8 @@ const main = (state = initialState, action) => {
                 incidents,
                 products,
                 hazards,
+                countries,
+                suppliers,
                 titles,
                 descriptions,
             };

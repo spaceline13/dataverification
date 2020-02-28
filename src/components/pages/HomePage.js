@@ -12,14 +12,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { MenuProvider } from 'react-contexify';
 
 import {
-    addIncidentToMongo,
+    addIncidentToMongo, checkIncidentsInMongo,
     fetchIncidentsIncludingUnpublished,
     removeIncidentFromMongo
 } from '../../controllers/IncidentsController';
 import IncidentsTable from '../organisms/IncidentsTable';
 import {
     addIncidents,
-    addIncidentsPagesLoaded,
+    addIncidentsPagesLoaded, importSavedIncidents,
     setFetchingIncidents, setHazardsTaxonomy,
     setIncidents,
     setIncidentsCount,
@@ -52,12 +52,15 @@ const HomePage = () => {
     const fetchFiltered = (comingFrom, product, source, supplier, dateRange) => {
         dispatch(setFetchingIncidents(true));
         fetchIncidentsIncludingUnpublished({ product, source, comingFrom, supplier, dateRange }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
-            dispatch(setIncidents(res));
-            dispatch(setIncidentsCount(count));
-            dispatch(addIncidentsPagesLoaded(0));
-            dispatch(setFetchingIncidents(false));
-            if (filters.remoteProducts) dispatch(setRemoteProducts(filters.remoteProducts));
-            if (filters.originalSources) dispatch(setOriginalSources(filters.originalSources));
+            checkIncidentsInMongo(res.map(incident => incident.dataId), (previouslySavedIncidents) => {
+                // add incidents from data platform
+                dispatch(setIncidents(res, previouslySavedIncidents.incidents));
+                dispatch(setIncidentsCount(count));
+                dispatch(addIncidentsPagesLoaded(0));
+                dispatch(setFetchingIncidents(false));
+                if (filters.remoteProducts) dispatch(setRemoteProducts(filters.remoteProducts));
+                if (filters.originalSources) dispatch(setOriginalSources(filters.originalSources));
+            });
         });
     };
 
