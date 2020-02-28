@@ -47,7 +47,6 @@ const main = (state = initialState, action) => {
         case SET_INCIDENTS: {
             const incidentsToSet = action.payload.incidents;
             const previouslySavedIncidents = action.payload.savedIncidents;
-            console.log(previouslySavedIncidents);
             const incidents = [];
             const products = {};
             const hazards = {};

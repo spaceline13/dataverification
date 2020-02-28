@@ -53,7 +53,7 @@ const HomePage = () => {
         dispatch(setFetchingIncidents(true));
         fetchIncidentsIncludingUnpublished({ product, source, comingFrom, supplier, dateRange }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
             checkIncidentsInMongo(res.map(incident => incident.dataId), (previouslySavedIncidents) => {
-                // add incidents from data platform
+                // add incidents from data platform and check from previously saved mongo incidents
                 dispatch(setIncidents(res, previouslySavedIncidents.incidents));
                 dispatch(setIncidentsCount(count));
                 dispatch(addIncidentsPagesLoaded(0));
