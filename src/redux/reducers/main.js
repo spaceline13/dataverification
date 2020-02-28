@@ -154,9 +154,9 @@ const main = (state = initialState, action) => {
 
             // remove tags
             const regex = `(<product>(?!${productsArray[0].original})|(?<!${productsArray[0].original})<\\/product>)`;
-            const title = state.titles[incident_id].replace(new RegExp(regex, 'g'), '');
+            const title = state.titles[incident_id] ? state.titles[incident_id].replace(new RegExp(regex, 'g'), '') : null;
             const titles = { ...state.titles, [incident_id]: title };
-            const description = state.descriptions[incident_id].replace(new RegExp(regex, 'g'), '');
+            const description = state.descriptions[incident_id] ? state.descriptions[incident_id].replace(new RegExp(regex, 'g'), '') : null;
             const descriptions = { ...state.descriptions, [incident_id]: description };
 
             // new products
@@ -213,9 +213,9 @@ const main = (state = initialState, action) => {
 
             //remove tags
             const regex = `(<hazard>(?!${hazardsArray[0].original})|(?<!${hazardsArray[0].original})<\\/hazard>)`;
-            const title = state.titles[incident_id].replace(new RegExp(regex, 'g'), '');
+            const title = state.titles[incident_id] ? state.titles[incident_id].replace(new RegExp(regex, 'g'), '') : null;
             const titles = { ...state.titles, [incident_id]: title };
-            const description = state.descriptions[incident_id].replace(new RegExp(regex, 'g'), '');
+            const description = state.descriptions[incident_id] ? state.descriptions[incident_id].replace(new RegExp(regex, 'g'), '') : null;
             const descriptions = { ...state.descriptions, [incident_id]: description };
 
             // new hazards
