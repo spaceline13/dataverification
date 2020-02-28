@@ -3,7 +3,8 @@ import ShowMoreText from 'react-show-more-text';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import styled from 'styled-components';
-import countries from '../../data/countries';
+import { countryList } from '../../data/countries';
+import Select from 'react-select';
 
 import Text from '../atoms/Text';
 import {
@@ -19,9 +20,8 @@ import {
     removeHazard,
     removeProduct,
     setApproved,
-    editProduct, editHazard
+    editProduct, editHazard, editCountry
 } from '../../redux/actions/mainActions';
-import { fetchAnnotationTermsWithCallback } from '../../controllers/AnnotationController';
 import moment from "moment";
 import RemoteAutocomplete from "../molecules/RemoteAutocomplete";
 import Box from "@material-ui/core/Box";
@@ -78,6 +78,9 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
             alert('could not find hazard in incident');
         }
     };
+    const handleEditCountry = (incident_id, country) => {
+        dispatch(editCountry(country ? country.value : null, incident_id));
+    };
     const handleRemoveProduct = (incident_id, product) => {
         dispatch(removeProduct(product, incident_id));
     };
@@ -106,11 +109,11 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
         });
     };
 
-    const searchAnnotations = (item, vocabulary, cb) => {
+    /*const searchAnnotations = (item, vocabulary, cb) => {
         fetchAnnotationTermsWithCallback(item, vocabulary, res => {
             cb(res);
         });
-    };
+    };*/
     const filterProductsAutocomplete = (inputText) => {
         const inputValue = inputText.trim().toLowerCase();
         const inputLength = inputValue.length;
@@ -169,7 +172,8 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                             !hazards[incident.id].find(hz => !hz.foodakai) &&
                             products[incident.id] &&
                             products[incident.id].length > 0 &&
-                            !products[incident.id].find(pr => !pr.foodakai);
+                            !products[incident.id].find(pr => !pr.foodakai) &&
+                            countries[incident.id].length > 0;
                         const trStyling = incident.approvedFrom ? { padding: '20px 0px', background: 'rgba(113,195,80,0.2)' } : { padding: '20px 0px' };
                         return (
                             <tr key={indexI} style={trStyling}>
@@ -224,12 +228,18 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                 <Text>
                                                     <b>Countries:</b>
                                                 </Text>
-                                                {countries[incident.id] &&
-                                                    countries[incident.id].map((country) => (
-                                                        <span>
-                                                            {country}
-                                                        </span>
-                                                    ))}
+                                                <Select
+                                                    className="select-country"
+                                                    classNamePrefix="select"
+                                                    isClearable={true}
+                                                    isSearchable={true}
+                                                    defaultValue={(countries[incident.id] && Array.isArray(countries[incident.id]) && countries[incident.id].length > 0) ? { value: countries[incident.id][0], label: countries[incident.id][0] } : null}
+                                                    onChange={(country)=>{handleEditCountry(incident.id, country)}}
+                                                    name={"country"+incident.id}
+                                                    key={"country"+incident.id}
+                                                    id={"country"+incident.id}
+                                                    options={countryList}
+                                                />
                                             </div>
                                         </Grid>
                                         <Grid item xs={8}>

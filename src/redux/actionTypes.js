@@ -17,6 +17,7 @@ export const ADD_PRODUCT = 'ADD_PRODUCT';
 export const ADD_HAZARD = 'ADD_HAZARD';
 export const EDIT_PRODUCT = 'EDIT_PRODUCT';
 export const EDIT_HAZARD = 'EDIT_HAZARD';
+export const EDIT_COUNTRY = 'EDIT_COUNTRY';
 export const REMOVE_PRODUCT = 'REMOVE_PRODUCT';
 export const REMOVE_HAZARD = 'REMOVE_HAZARD';
 

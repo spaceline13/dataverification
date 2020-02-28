@@ -20,6 +20,7 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
         from: dateRange && dateRange.from ? moment(dateRange.from).format('YYYY-MM-DD') : null,
         to: dateRange && dateRange.to ? moment(dateRange.to).format('YYYY-MM-DD') : null,
         strictQuery: {},
+        existenceQuery: ["suppliers"], // for the time being bring only the ones that have supplier
         aggregations: {
             remoteProducts: {
                 attribute: 'remoteProducts.value.keyword',

@@ -4,13 +4,22 @@ import {
     ADD_INCIDENTS_PAGES_LOADED,
     ADD_PRODUCT,
     REMOVE_HAZARD,
-    REMOVE_PRODUCT, SET_APPROVED,
-    SET_COMMUNITY, SET_COUNTRIES_TAXOOMY, SET_DESCRIPTIONS,
+    REMOVE_PRODUCT,
+    SET_APPROVED,
+    SET_COMMUNITY,
+    SET_COUNTRIES_TAXOOMY,
+    SET_DESCRIPTIONS,
     SET_FETCHING_INCIDENTS,
-    REPLACE_HAZARDS, SET_HAZARDS_TAXONOMY,
+    REPLACE_HAZARDS,
+    SET_HAZARDS_TAXONOMY,
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
-    REPLACE_PRODUCTS, SET_PRODUCTS_TAXONOMY, SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD, IMPORT_SAVED_INCIDENTS,
+    REPLACE_PRODUCTS,
+    SET_PRODUCTS_TAXONOMY,
+    SET_TITLES,
+    EDIT_PRODUCT,
+    EDIT_HAZARD,
+    EDIT_COUNTRY,
 } from '../actionTypes';
 
 const setCommunity = community => ({
@@ -127,6 +136,13 @@ const editHazard = (index, hazard, incident_id) => ({
         incident_id,
     },
 });
+const editCountry = (country, incident_id) => ({
+   type: EDIT_COUNTRY,
+   payload: {
+       country,
+       incident_id
+   }
+});
 const removeProduct = (product, incident_id) => ({
     type: REMOVE_PRODUCT,
     payload: {
@@ -179,6 +195,7 @@ export {
     editProduct,
     addHazard,
     editHazard,
+    editCountry,
     removeProduct,
     removeHazard,
 };

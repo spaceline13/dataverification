@@ -12,7 +12,7 @@ import {
     SET_INCIDENTS,
     SET_INCIDENTS_COUNT,
     REPLACE_PRODUCTS, SET_PRODUCTS_TAXONOMY,
-    SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD,
+    SET_TITLES, EDIT_PRODUCT, EDIT_HAZARD, EDIT_COUNTRY,
 } from '../actionTypes';
 import stringSimilarity  from 'string-similarity';
 
@@ -255,6 +255,14 @@ const main = (state = initialState, action) => {
             return {
                 ...state,
                 hazards,
+            };
+        }
+        case EDIT_COUNTRY: {
+            const { country, incident_id } = action.payload;
+            const countries = { ...state.countries, [incident_id]: country };
+            return {
+                ...state,
+                countries,
             };
         }
         case SET_FETCHING_INCIDENTS: {
