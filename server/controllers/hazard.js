@@ -3,7 +3,7 @@ import fetch from "node-fetch";
 
 export function addHazards(array, page) {
     const hazards = array.map(hazard => new Hazard({ name: hazard }));
-    return Hazard.insertMany(hazards).then(() =>  console.log('hazards added page: ', page)).catch(error => console.log(error));
+    return Hazard.insertMany(hazards).then(() => {/* console.log('hazards added page: ', page)*/}).catch(error => console.log(error));
 }
 
 export function eraseHazards() {

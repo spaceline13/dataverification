@@ -35,7 +35,7 @@ app.get('/', (request, respond) => {
 app.use('/api/', mainRoutes);
 
 
-var harvest = new CronJob('0 0 18 * * 5', function() {
+var harvest = new CronJob('0 0 2 * * 1', function() {
     console.log('---- Harvest Started: ', new Date(), '----');
     eraseProducts();
     fetchProductsFromPlatformToMongo(0);
