@@ -125,7 +125,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
 
         return ({
             hits: {
-                hits: results.map(res => (
+                hits: results.reverse().map(res => (
                     {
                         ['_source']: {
                             title: res
@@ -146,7 +146,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
 
         return ({
             hits: {
-                hits: results.map(res => (
+                hits: results.reverse().map(res => (
                     {
                         ['_source']: {
                             title: res
