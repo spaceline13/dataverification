@@ -33,17 +33,17 @@ const Filters = ({ refreshDropdowns }) => {
 
     const handleSelectProducts = products => {
         dispatch(setSelectedRemoteProducts(products));
-        refreshDropdowns('remoteProducts', products, selectedOriginalSources, selectedSupplier);
+        refreshDropdowns('remoteProducts', products, selectedOriginalSources, selectedSupplier, selectedDateRange);
     };
 
     const handleSelectSources = sources => {
         dispatch(setSelectedOriginalSources(sources));
-        refreshDropdowns('originalSources', selectedRemoteProducts, sources, selectedSupplier);
+        refreshDropdowns('originalSources', selectedRemoteProducts, sources, selectedSupplier, selectedDateRange);
     };
 
     const handleSelectSupplier = supplier => {
         dispatch(setSelectedSupplier(supplier));
-        refreshDropdowns('supplier', selectedRemoteProducts, selectedOriginalSources, supplier);
+        refreshDropdowns('supplier', selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange);
     };
 
     const handleSelectDateRange = dateRange => {

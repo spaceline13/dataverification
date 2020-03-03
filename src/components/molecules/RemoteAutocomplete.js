@@ -8,11 +8,12 @@ import useDebouncedFetch from '../../utils/hooks/useDebouncedFetch';
 // obj(response) -> obj(hits) -> array(hits) => object(item => item._source) -> string(title)
 // for any changes, you have to change the items prop
 
-const RemoteAutocomplete = ({ onSelect, asyncFetchFunction, placeholder, reference, hasAddNew, variant, customListHandler }) => {
+const RemoteAutocomplete = ({ key, onSelect, asyncFetchFunction, placeholder, reference, hasAddNew, variant, customListHandler }) => {
 	const { inputText, setInputText, search } = useDebouncedFetch(asyncFetchFunction);
 
 	return (
 		<MuiDownshift
+			key={key}
 			ref={reference}
 			variant={variant ? variant : 'standard'}
 			getListItem={

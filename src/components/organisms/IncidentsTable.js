@@ -212,8 +212,9 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                                 <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{product.original}</Text>
                                                                 <Box display={'inline-block'}>
                                                                     <RemoteAutocomplete
+                                                                        key={'product'+incident.id+index}
                                                                         variant={'outlined'}
-                                                                        onSelect={(value) => handleEditProduct(incident.id, product, value.title)}
+                                                                        onSelect={(value) => handleEditProduct(incident.id, product, value ? value.title : null)}
                                                                         asyncFetchFunction={filterProductsAutocomplete}
                                                                         placeholder={product.foodakai ? product.foodakai : 'Find product'}
                                                                     />
@@ -263,8 +264,9 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                                 <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{hazard.original}</Text>
                                                                 <Box display={'inline-block'}>
                                                                     <RemoteAutocomplete
+                                                                        key={'product'+incident.id+index}
                                                                         variant={'outlined'}
-                                                                        onSelect={(value) => handleEditHazard(incident.id, hazard, value.title)}
+                                                                        onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.title : null)}
                                                                         asyncFetchFunction={filterHazardsAutocomplete}
                                                                         placeholder={hazard.foodakai ? hazard.foodakai : 'Find hazard'}
                                                                     />
