@@ -22,8 +22,13 @@ export function createIncident(req, res) {
         });
 }
 export function getAllIncidents(req, res) {
+    let { pageSize, page } = req.query;
+    if (pageSize) pageSize = parseInt(pageSize);
+    if (page) page = parseInt(page);
     Incident.find()
         .select('id user title description products hazards country supplier')
+        .limit(pageSize ? parseInt(pageSize) : null)
+        .skip(pageSize * page)
         .then(allIncidents => {
             return res.status(200).json({
                 success: true,
@@ -72,3 +77,20 @@ export function deleteIncident(req, res) {
             }),
         );
 }
+export function deleteManyIncidents(req, res) {
+    const { ids } = req.body;
+    Incident.deleteMany( { id : { $in: ids } } ).exec()
+        .then(() =>
+            res.status(204).json({
+                success: true,
+            }),
+        )
+        .catch(err =>
+            res.status(500).json({
+                success: false,
+                message: 'Server error. Please try again.',
+                error: err.message,
+            }),
+        );
+}
+

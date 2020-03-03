@@ -8,7 +8,13 @@ import {
     getUserCurations,
     updateCuration
 } from '../controllers/curation';
-import {checkForIncidents, createIncident, deleteIncident, getAllIncidents} from '../controllers/incident';
+import {
+    checkForIncidents,
+    createIncident,
+    deleteIncident,
+    deleteManyIncidents,
+    getAllIncidents
+} from '../controllers/incident';
 import {getProducts} from "../controllers/product";
 import {getHazards} from "../controllers/hazard";
 
@@ -21,6 +27,7 @@ router.post('/incident', createIncident);
 router.get('/incidents', getAllIncidents);
 router.post('/checkIncidents', checkForIncidents);
 router.delete('/incident/:id', deleteIncident);
+router.delete('/incidents', deleteManyIncidents);
 
 router.post('/curation', createCuration);
 router.get('/curations', getAllCurations);
