@@ -117,9 +117,12 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     const filterProductsAutocomplete = (inputText) => {
         const inputValue = inputText.trim().toLowerCase();
         const inputLength = inputValue.length;
+
+        var reg = new RegExp(inputValue.split('').join('\\w*').replace(/\W/, ""), 'i');
         const results = inputLength === 0 ? [] : productsTaxonomy.filter(pr =>
-            pr.toLowerCase().slice(0, inputLength) === inputValue
+            pr.match(reg)
         );
+
         return ({
             hits: {
                 hits: results.map(res => (
@@ -135,9 +138,12 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     const filterHazardsAutocomplete = (inputText) => {
         const inputValue = inputText.trim().toLowerCase();
         const inputLength = inputValue.length;
-        const results = inputLength === 0 ? [] : hazardsTaxonomy.filter(pr =>
-            pr.toLowerCase().slice(0, inputLength) === inputValue
+
+        var reg = new RegExp(inputValue.split('').join('\\w*').replace(/\W/, ""), 'i');
+        const results = inputLength === 0 ? [] : hazardsTaxonomy.filter(hz =>
+            hz.match(reg)
         );
+
         return ({
             hits: {
                 hits: results.map(res => (
@@ -212,6 +218,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                                 <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{product.original}</Text>
                                                                 <Box display={'inline-block'}>
                                                                     <RemoteAutocomplete
+                                                                        noWait
                                                                         key={'product'+incident.id+index}
                                                                         variant={'outlined'}
                                                                         onSelect={(value) => handleEditProduct(incident.id, product, value ? value.title : null)}
@@ -264,6 +271,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                                 <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{hazard.original}</Text>
                                                                 <Box display={'inline-block'}>
                                                                     <RemoteAutocomplete
+                                                                        noWait
                                                                         key={'product'+incident.id+index}
                                                                         variant={'outlined'}
                                                                         onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.title : null)}

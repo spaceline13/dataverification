@@ -8,8 +8,8 @@ import useDebouncedFetch from '../../utils/hooks/useDebouncedFetch';
 // obj(response) -> obj(hits) -> array(hits) => object(item => item._source) -> string(title)
 // for any changes, you have to change the items prop
 
-const RemoteAutocomplete = ({ key, onSelect, asyncFetchFunction, placeholder, reference, hasAddNew, variant, customListHandler }) => {
-	const { inputText, setInputText, search } = useDebouncedFetch(asyncFetchFunction);
+const RemoteAutocomplete = ({ key, onSelect, asyncFetchFunction, placeholder, reference, hasAddNew, variant, customListHandler, noWait }) => {
+	const { inputText, setInputText, search } = useDebouncedFetch(asyncFetchFunction, true);
 
 	return (
 		<MuiDownshift
@@ -27,7 +27,7 @@ const RemoteAutocomplete = ({ key, onSelect, asyncFetchFunction, placeholder, re
 						) : (
 							// the actual options
 							<ListItem button {...getItemProps(item)}>
-								<ListItemText primary={item.title} secondary={item.secondaryDataToDisplay ? item.secondaryDataToDisplay : ''} />
+								<ListItemText primary={<span dangerouslySetInnerHTML={{ __html: item.title.replace(inputText, '<b>' + inputText + '</b>') }} />} secondary={item.secondaryDataToDisplay ? item.secondaryDataToDisplay : ''} />
 							</ListItem>
 						) :
 						search.loading ? (
