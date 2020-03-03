@@ -156,12 +156,13 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
             }
         });
     };
-
-    return (
-        <div>
-            <table className="table table-hover-dark table-striped" style={{ color: '#636971' }}>
-                <thead>
+    if (currentPageItems.length > 0) {
+        return (
+            <div>
+                <table className="table table-hover-dark table-striped" style={{color: '#636971'}}>
+                    <thead>
                     <tr>
+                        <th></th>
                         <th width={'200px'}>Title</th>
                         <th width={'800px'}>Description</th>
                         <th>Curation Fields</th>
@@ -169,8 +170,8 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                             <i className="fas fa-check"></i>
                         </th>
                     </tr>
-                </thead>
-                <tbody>
+                    </thead>
+                    <tbody>
                     {currentPageItems.map((incident, indexI) => {
                         const checked =
                             hazards[incident.id] &&
@@ -180,16 +181,25 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                             products[incident.id].length > 0 &&
                             !products[incident.id].find(pr => !pr.foodakai) &&
                             countries[incident.id].length > 0;
-                        const trStyling = incident.approvedFrom ? { padding: '20px 0px', background: 'rgba(113,195,80,0.2)' } : { padding: '20px 0px' };
+                        const trStyling = incident.approvedFrom ? {
+                            padding: '20px 0px',
+                            background: 'rgba(113,195,80,0.2)'
+                        } : {padding: '20px 0px'};
                         return (
                             <tr key={indexI} style={trStyling}>
+                                <td style={{ paddingRight: '0px' }}>
+                                    <a href={`http://data.foodakai.com/node/${incident.internalId}`} target={'_blank'} rel={'noopener noreferrer'}>
+                                        <i className="fas fa-external-link-alt" />
+                                    </a>
+                                </td>
                                 <td data-id={incident.id} data-field={'title'}>
                                     <Text>{titles[incident.id]}</Text>
                                 </td>
                                 <td data-id={incident.id} data-field={'description'}>
                                     <Text>
                                         {descriptions[incident.id] && (
-                                            <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass="" expanded={false} width={'770'}>
+                                            <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass=""
+                                                          expanded={false} width={'770'}>
                                                 {descriptions[incident.id]}
                                             </ShowMoreText>
                                         )}
@@ -198,36 +208,40 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                 <td>
                                     <Grid container>
                                         <Grid item xs={8}>
-                                            <div data-id={incident.id}>
+                                            <div>
                                                 <Text>
                                                     <b>Products:</b>
                                                 </Text>
                                                 <Text>
                                                     {products[incident.id] &&
-                                                        products[incident.id].map((product, index) => (
-                                                            <Product key={index}>
-                                                                <i className="fas fa-times" style={{
-                                                                    cursor: 'pointer',
-                                                                    position: 'relative',
-                                                                    top: '-3px',
-                                                                    right: '-3px',
-                                                                    float: 'right',
-                                                                    background: '#f9f9f9',
-                                                                    padding: '1px 3px'
-                                                                }} onClick={() => handleRemoveProduct(incident.id, product)} />
-                                                                <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{product.original}</Text>
-                                                                <Box display={'inline-block'}>
-                                                                    <RemoteAutocomplete
-                                                                        noWait
-                                                                        key={'product'+incident.id+index}
-                                                                        variant={'outlined'}
-                                                                        onSelect={(value) => handleEditProduct(incident.id, product, value ? value.title : null)}
-                                                                        asyncFetchFunction={filterProductsAutocomplete}
-                                                                        placeholder={product.foodakai ? product.foodakai : 'Find product'}
-                                                                    />
-                                                                </Box>
-                                                            </Product>
-                                                        ))}
+                                                    products[incident.id].map((product, index) => (
+                                                        <Product key={index}>
+                                                            <i className="fas fa-times" style={{
+                                                                cursor: 'pointer',
+                                                                position: 'relative',
+                                                                top: '-3px',
+                                                                right: '-3px',
+                                                                float: 'right',
+                                                                background: '#f9f9f9',
+                                                                padding: '1px 3px'
+                                                            }}
+                                                               onClick={() => handleRemoveProduct(incident.id, product)}/>
+                                                            <Text inline mr={'2px'} style={{
+                                                                position: 'relative',
+                                                                top: '3px'
+                                                            }}>{product.original}</Text>
+                                                            <Box display={'inline-block'}>
+                                                                <RemoteAutocomplete
+                                                                    noWait
+                                                                    key={'product' + incident.id + index}
+                                                                    variant={'outlined'}
+                                                                    onSelect={(value) => handleEditProduct(incident.id, product, value ? value.title : null)}
+                                                                    asyncFetchFunction={filterProductsAutocomplete}
+                                                                    placeholder={product.foodakai ? product.foodakai : 'Find product'}
+                                                                />
+                                                            </Box>
+                                                        </Product>
+                                                    ))}
                                                 </Text>
                                             </div>
                                         </Grid>
@@ -241,46 +255,54 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                     classNamePrefix="select"
                                                     isClearable={true}
                                                     isSearchable={true}
-                                                    defaultValue={(countries[incident.id] && Array.isArray(countries[incident.id]) && countries[incident.id].length > 0) ? { value: countries[incident.id][0], label: countries[incident.id][0] } : null}
-                                                    onChange={(country)=>{handleEditCountry(incident.id, country)}}
-                                                    name={"country"+incident.id}
-                                                    key={"country"+incident.id}
-                                                    id={"country"+incident.id}
+                                                    defaultValue={(countries[incident.id] && Array.isArray(countries[incident.id]) && countries[incident.id].length > 0) ? {
+                                                        value: countries[incident.id][0],
+                                                        label: countries[incident.id][0]
+                                                    } : null}
+                                                    onChange={(country) => {
+                                                        handleEditCountry(incident.id, country)
+                                                    }}
+                                                    name={"country" + incident.id}
+                                                    key={"country" + incident.id}
+                                                    id={"country" + incident.id}
                                                     options={countryList}
                                                 />
                                             </div>
                                         </Grid>
                                         <Grid item xs={8}>
-                                            <div data-id={incident.id}>
+                                            <div>
                                                 <Text>
                                                     <b>Hazards:</b>
                                                 </Text>
                                                 <Text>
                                                     {hazards[incident.id] &&
-                                                        hazards[incident.id].map((hazard, index) => (
-                                                            <Hazard key={index}>
-                                                                <i className="fas fa-times" style={{
-                                                                    cursor: 'pointer',
-                                                                    position: 'relative',
-                                                                    top: '-3px',
-                                                                    right: '-3px',
-                                                                    float: 'right',
-                                                                    background: '#f9f9f9',
-                                                                    padding: '1px 3px'
-                                                                }} onClick={() => handleRemoveHazard(incident.id, hazard)} />
-                                                                <Text inline mr={'2px'} style={{ position: 'relative', top: '3px' }}>{hazard.original}</Text>
-                                                                <Box display={'inline-block'}>
-                                                                    <RemoteAutocomplete
-                                                                        noWait
-                                                                        key={'product'+incident.id+index}
-                                                                        variant={'outlined'}
-                                                                        onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.title : null)}
-                                                                        asyncFetchFunction={filterHazardsAutocomplete}
-                                                                        placeholder={hazard.foodakai ? hazard.foodakai : 'Find hazard'}
-                                                                    />
-                                                                </Box>
-                                                            </Hazard>
-                                                        ))}
+                                                    hazards[incident.id].map((hazard, index) => (
+                                                        <Hazard key={index}>
+                                                            <i className="fas fa-times" style={{
+                                                                cursor: 'pointer',
+                                                                position: 'relative',
+                                                                top: '-3px',
+                                                                right: '-3px',
+                                                                float: 'right',
+                                                                background: '#f9f9f9',
+                                                                padding: '1px 3px'
+                                                            }} onClick={() => handleRemoveHazard(incident.id, hazard)}/>
+                                                            <Text inline mr={'2px'} style={{
+                                                                position: 'relative',
+                                                                top: '3px'
+                                                            }}>{hazard.original}</Text>
+                                                            <Box display={'inline-block'}>
+                                                                <RemoteAutocomplete
+                                                                    noWait
+                                                                    key={'product' + incident.id + index}
+                                                                    variant={'outlined'}
+                                                                    onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.title : null)}
+                                                                    asyncFetchFunction={filterHazardsAutocomplete}
+                                                                    placeholder={hazard.foodakai ? hazard.foodakai : 'Find hazard'}
+                                                                />
+                                                            </Box>
+                                                        </Hazard>
+                                                    ))}
                                                 </Text>
                                             </div>
                                         </Grid>
@@ -288,7 +310,8 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                             <Text>
                                                 <b>Suppliers:</b>
                                             </Text>
-                                            {suppliers[incident.id] && suppliers[incident.id].map((s, index) => <span>{s.title}</span>)}
+                                            {suppliers[incident.id] && suppliers[incident.id].map((s, index) =>
+                                                <span>{s.title}</span>)}
                                         </Grid>
                                     </Grid>
                                 </td>
@@ -299,9 +322,13 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                     {checked && (
                                         <div>
                                             {incident.approvedFrom ? (
-                                                <i className="fas fa-times-circle" style={{ color: '#960d2e', cursor: 'pointer' }} onClick={() => handleDissapprove(incident.id)} />
+                                                <i className="fas fa-times-circle"
+                                                   style={{color: '#960d2e', cursor: 'pointer'}}
+                                                   onClick={() => handleDissapprove(incident.id)}/>
                                             ) : (
-                                                <i className="fas fa-check-circle" style={{ color: '#2d7543', cursor: 'pointer' }} onClick={() => handleApprove(incident.id)} />
+                                                <i className="fas fa-check-circle"
+                                                   style={{color: '#2d7543', cursor: 'pointer'}}
+                                                   onClick={() => handleApprove(incident.id)}/>
                                             )}
                                         </div>
                                     )}
@@ -309,10 +336,15 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                             </tr>
                         );
                     })}
-                </tbody>
-            </table>
-        </div>
-    );
+                    </tbody>
+                </table>
+            </div>
+        );
+    } else {
+        return (
+            <Text size={'24px'}>There are no data available for your filters</Text>
+        );
+    }
 };
 
 export default IncidentsTable;
