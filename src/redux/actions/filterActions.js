@@ -1,6 +1,6 @@
 import {
     LOAD_CURATION, SET_LOADING_CURATION, SET_NAME,
-    SET_ORIGINAL_SOURCES,
+    SET_ORIGINAL_SOURCES, SET_POSSIBLY_OK,
     SET_REMOTE_PRODUCTS, SET_SELECTED_DATE_RANGE,
     SET_SELECTED_ORIGINAL_SOURCES,
     SET_SELECTED_REMOTE_PRODUCTS, SET_SELECTED_SUPPLIER
@@ -67,5 +67,12 @@ export const setSelectedDateRange = selectedDateRange => ({
     type: SET_SELECTED_DATE_RANGE,
     payload: {
         selectedDateRange,
+    },
+});
+
+export const setPossiblyOk = possiblyOk => ({
+    type: SET_POSSIBLY_OK,
+    payload: {
+        possiblyOk,
     },
 });

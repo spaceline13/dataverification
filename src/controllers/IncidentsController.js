@@ -6,7 +6,7 @@ import {toastr} from "react-redux-toastr";
 const concatStringsWithOrReducer = (accumulator, currentValue, index) => (index === 0 ? (currentValue.key ? currentValue.key : currentValue) : (accumulator + '||' + (currentValue.key ? currentValue.key : currentValue)));
 export const ifArrayCreateStringForQuery = item => (Array.isArray(item) ? item.reduce(concatStringsWithOrReducer, '') : item);
 
-export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, source, comingFrom, supplier, dateRange }, pageSize = 100, page = 0, detail = false, from, to, callback) => {
+export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, source, comingFrom, supplier, dateRange, possiblyOk }, pageSize = 100, page = 0, detail = false, from, to, callback) => {
     const productString = ifArrayCreateStringForQuery(product);
     const sourceString = ifArrayCreateStringForQuery(source);
 
@@ -20,7 +20,7 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
         from: dateRange && dateRange.from ? moment(dateRange.from).format('YYYY-MM-DD') : null,
         to: dateRange && dateRange.to ? moment(dateRange.to).format('YYYY-MM-DD') : null,
         strictQuery: {},
-        existenceQuery: ["suppliers"], // for the time being bring only the ones that have supplier
+        existenceQuery: possiblyOk ? ["suppliers","originInfo.country.value","machineHazards","machineProducts"] : ["suppliers"], // for the time being bring only the ones that have supplier
         aggregations: {
             remoteProducts: {
                 attribute: 'remoteProducts.value.keyword',

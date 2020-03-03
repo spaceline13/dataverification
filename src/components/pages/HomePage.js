@@ -49,9 +49,9 @@ const HomePage = () => {
     const pageItemsCount = 8;
     const [currentPageItems, setCurrentPageItems] = useState([]);
 
-    const fetchFiltered = (comingFrom, product, source, supplier, dateRange) => {
+    const fetchFiltered = (comingFrom, product, source, supplier, dateRange, possiblyOk) => {
         dispatch(setFetchingIncidents(true));
-        fetchIncidentsIncludingUnpublished({ product, source, comingFrom, supplier, dateRange }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
+        fetchIncidentsIncludingUnpublished({ product, source, comingFrom, supplier, dateRange, possiblyOk }, PAGE_SIZE, 0, true, null, null, ({ res, count, filters }) => {
             checkIncidentsInMongo(res.map(incident => incident.dataId), (previouslySavedIncidents) => {
                 // add incidents from data platform and check from previously saved mongo incidents
                 dispatch(setIncidents(res, previouslySavedIncidents.incidents));
@@ -69,8 +69,8 @@ const HomePage = () => {
         setCurrentPageItems(incidents.slice(currentPage * pageItemsCount, currentPage * pageItemsCount + pageItemsCount));
     }, [incidents, currentPage]);
 
-    const handleAskForMoreIncidents = (page, product, source) => {
-        fetchIncidentsIncludingUnpublished({ product, source }, PAGE_SIZE, page, true, null, null, ({ res }) => {
+    const handleAskForMoreIncidents = (page, product, source, supplier, dateRange, possiblyOk) => {
+        fetchIncidentsIncludingUnpublished({ product, source, supplier, dateRange, possiblyOk }, PAGE_SIZE, page, true, null, null, ({ res }) => {
             dispatch(addIncidents(res));
             dispatch(addIncidentsPagesLoaded(page));
         });

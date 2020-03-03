@@ -1,8 +1,10 @@
 import {useDispatch, useSelector} from 'react-redux';
 import React from 'react';
+import Toggle from 'react-toggle';
+import "react-toggle/style.css";
 import {
     getLoadingCuration,
-    getOriginalSources,
+    getOriginalSources, getPossiblyOk,
     getRemoteProducts, getSelectedDateRange,
     getSelectedOriginalSources,
     getSelectedRemoteProducts,
@@ -11,6 +13,7 @@ import {
 import LocalAutocompleteMulti from '../molecules/LocalAutocompleteMulti';
 import Box from "@material-ui/core/Box";
 import {
+    setPossiblyOk,
     setSelectedDateRange,
     setSelectedOriginalSources,
     setSelectedRemoteProducts,
@@ -18,6 +21,7 @@ import {
 } from "../../redux/actions/filterActions";
 import SearchSupplier from "./SearchSupplier";
 import Datepicker from "../molecules/Datepicker";
+import Text from "../atoms/Text";
 
 export const formatNumber = num => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 
@@ -30,25 +34,31 @@ const Filters = ({ refreshDropdowns }) => {
     const selectedOriginalSources = useSelector(getSelectedOriginalSources);
     const selectedSupplier = useSelector(getSelectedSupplier);
     const selectedDateRange = useSelector(getSelectedDateRange);
+    const selectedPossiblyOk = useSelector(getPossiblyOk);
 
     const handleSelectProducts = products => {
         dispatch(setSelectedRemoteProducts(products));
-        refreshDropdowns('remoteProducts', products, selectedOriginalSources, selectedSupplier, selectedDateRange);
+        refreshDropdowns('remoteProducts', products, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
     };
 
     const handleSelectSources = sources => {
         dispatch(setSelectedOriginalSources(sources));
-        refreshDropdowns('originalSources', selectedRemoteProducts, sources, selectedSupplier, selectedDateRange);
+        refreshDropdowns('originalSources', selectedRemoteProducts, sources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
     };
 
     const handleSelectSupplier = supplier => {
         dispatch(setSelectedSupplier(supplier));
-        refreshDropdowns('supplier', selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange);
+        refreshDropdowns('supplier', selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange, selectedPossiblyOk);
     };
 
     const handleSelectDateRange = dateRange => {
         dispatch(setSelectedDateRange(dateRange));
-        refreshDropdowns('dateRange', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange);
+        refreshDropdowns('dateRange', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk);
+    };
+
+    const handlePossiblyOk = possiblyOk => {
+        dispatch(setPossiblyOk(possiblyOk));
+        refreshDropdowns('possiblyOk', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, possiblyOk);
     };
 
     if (!loadingCuration) {
@@ -94,6 +104,13 @@ const Filters = ({ refreshDropdowns }) => {
                     {selectedSupplier && <i style={{cursor: 'pointer', position: 'relative', top: '-4px' }} onClick={() => handleSelectSupplier(null)}
                                             className="fas fa-times"></i>
                     }
+                    <Box ml={'10px'} mr={'-10px'}>
+                        <Text size={'8px'} pb={'2px'} pl={'4px'} color={'#797979'}>possibly ok</Text>
+                        <Toggle
+                            defaultChecked={selectedPossiblyOk}
+                            onChange={handlePossiblyOk}
+                        />
+                    </Box>
                 </Box>
                 <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
                     <Datepicker

@@ -1,6 +1,6 @@
 import {
     LOAD_CURATION, SET_LOADING_CURATION, SET_NAME,
-    SET_ORIGINAL_SOURCES,
+    SET_ORIGINAL_SOURCES, SET_POSSIBLY_OK,
     SET_REMOTE_PRODUCTS, SET_SELECTED_DATE_RANGE,
     SET_SELECTED_ORIGINAL_SOURCES,
     SET_SELECTED_REMOTE_PRODUCTS, SET_SELECTED_SUPPLIER
@@ -15,6 +15,7 @@ const initialState = {
     selectedDateRange: { from: null, to: null },
     selectedRemoteProducts: [],
     selectedOriginalSources: [],
+    possiblyOk: false,
 };
 
 const filters = (state = initialState, action) => {
@@ -77,6 +78,13 @@ const filters = (state = initialState, action) => {
             return {
                 ...state,
                 selectedOriginalSources,
+            };
+        }
+        case SET_POSSIBLY_OK: {
+            const { possiblyOk } = action.payload;
+            return {
+                ...state,
+                possiblyOk,
             };
         }
         default:

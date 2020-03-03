@@ -8,4 +8,5 @@ const getSelectedRemoteProducts = store => (getFiltersState(store) ? getFiltersS
 const getSelectedOriginalSources = store => (getFiltersState(store) ? getFiltersState(store).selectedOriginalSources : []);
 const getSelectedSupplier = store => (getFiltersState(store) ? getFiltersState(store).selectedSupplier : []);
 const getSelectedDateRange = store => (getFiltersState(store) ? getFiltersState(store).selectedDateRange : { from: null, to: null });
-export { getFiltersState, getName, getLoadingCuration, getRemoteProducts, getOriginalSources, getSelectedRemoteProducts, getSelectedOriginalSources, getSelectedSupplier, getSelectedDateRange };
+const getPossiblyOk = store => (getFiltersState(store) ? getFiltersState(store).possiblyOk : []);
+export { getFiltersState, getName, getLoadingCuration, getRemoteProducts, getOriginalSources, getSelectedRemoteProducts, getSelectedOriginalSources, getSelectedSupplier, getSelectedDateRange, getPossiblyOk };

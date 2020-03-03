@@ -10,8 +10,10 @@ import Text from "../atoms/Text";
 import SaveModal from "./SaveModal";
 import LoadModal from "./LoadModal";
 import {
+    getPossiblyOk,
+    getSelectedDateRange,
     getSelectedOriginalSources,
-    getSelectedRemoteProducts
+    getSelectedRemoteProducts, getSelectedSupplier
 } from "../../redux/selectors/filterSelectors";
 import {useAuth0} from "../molecules/Auth0Wrapper";
 import Box from "@material-ui/core/Box";
@@ -27,6 +29,9 @@ const Header = ({ setCurrentPage, refreshResults, pageItemsCount, onLoadMorePage
     const [showLoadModal, setShowLoadModal] = useState(false);
     const selectedRemoteProducts = useSelector(getSelectedRemoteProducts);
     const selectedOriginalSources = useSelector(getSelectedOriginalSources);
+    const selectedSupplier = useSelector(getSelectedSupplier);
+    const selectedDateRange = useSelector(getSelectedDateRange);
+    const selectedPossiblyOk = useSelector(getPossiblyOk);
 
     const handlePageClick = page => {
         setCurrentPage(page.selected);
@@ -34,7 +39,7 @@ const Header = ({ setCurrentPage, refreshResults, pageItemsCount, onLoadMorePage
         // if DataPlatform page has not been loaded, fetch data
         if (!pagesLoaded.includes(pageToAskDataPlatform)) {
             if (onLoadMorePages) {
-                onLoadMorePages(pageToAskDataPlatform, selectedRemoteProducts, selectedOriginalSources);
+                onLoadMorePages(pageToAskDataPlatform, selectedRemoteProducts, selectedOriginalSources,  selectedSupplier, selectedDateRange, selectedPossiblyOk);
             }
         }
     };
@@ -47,7 +52,7 @@ const Header = ({ setCurrentPage, refreshResults, pageItemsCount, onLoadMorePage
     };
 
     return (
-        <Paper padding={'10px'} style={{ borderRadius: '0px' }}>
+        <Paper padding={'10px'} style={isFooter ? { boxShadow: 'none' } : { borderRadius: '0px' }}>
             {logo && <img alt={'logo'} src={logo} style={{ height: '50px', margin: '6px 20px' }} />}
 
             <Grid container>
