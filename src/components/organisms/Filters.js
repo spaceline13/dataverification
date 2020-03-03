@@ -22,12 +22,14 @@ import {
 import SearchSupplier from "./SearchSupplier";
 import Datepicker from "../molecules/Datepicker";
 import Text from "../atoms/Text";
+import {getFetchingIncidents} from "../../redux/selectors/mainSelectors";
 
 export const formatNumber = num => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 
 const Filters = ({ refreshDropdowns }) => {
     const dispatch = useDispatch();
     const loadingCuration = useSelector(getLoadingCuration);
+    const loadingIncidents = useSelector(getFetchingIncidents);
     const remoteProducts = useSelector(getRemoteProducts);
     const originalSources = useSelector(getOriginalSources);
     const selectedRemoteProducts = useSelector(getSelectedRemoteProducts);
@@ -56,48 +58,44 @@ const Filters = ({ refreshDropdowns }) => {
         refreshDropdowns('dateRange', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk);
     };
 
-    const handlePossiblyOk = possiblyOk => {
-        dispatch(setPossiblyOk(possiblyOk));
-        refreshDropdowns('possiblyOk', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, possiblyOk);
+    const handlePossiblyOk = event => {
+        dispatch(setPossiblyOk(event.target.checked));
+        refreshDropdowns('possiblyOk', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, event.target.checked);
     };
 
-    if (!loadingCuration) {
+    if (!(loadingCuration || loadingIncidents)) {
         return (
             <Box display={'flex'} alignItems={'flex-end'} mt={'20px'} mb={'20px'}>
-                {remoteProducts && remoteProducts.length > 0 && (
-                    <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
-                        <LocalAutocompleteMulti
-                            selected={selectedRemoteProducts}
-                            onSelect={handleSelectProducts}
-                            items={remoteProducts}
-                            primaryItemOpt={'key'}
-                            secondaryItemOpt={'doc_count'}
-                            placeholder={
-                                <span>
-                                <i className="fa fa-md fa-bar-chart"/> Type and select products
-                            </span>
-                            }
-                            formatNumbers={formatNumber}
-                        />
-                    </Box>
-                )}
-                {originalSources && originalSources.length > 0 && (
-                    <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
-                        <LocalAutocompleteMulti
-                            selected={selectedOriginalSources}
-                            onSelect={handleSelectSources}
-                            items={originalSources}
-                            primaryItemOpt={'key'}
-                            secondaryItemOpt={'doc_count'}
-                            placeholder={
-                                <span>
-                                <i className="fa fa-md fa-file-text"/> Type and select sources
-                            </span>
-                            }
-                            formatNumbers={formatNumber}
-                        />
-                    </Box>
-                )}
+                <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
+                    <LocalAutocompleteMulti
+                        selected={selectedRemoteProducts}
+                        onSelect={handleSelectProducts}
+                        items={remoteProducts}
+                        primaryItemOpt={'key'}
+                        secondaryItemOpt={'doc_count'}
+                        placeholder={
+                            <span>
+                            <i className="fa fa-md fa-bar-chart"/> Type and select products
+                        </span>
+                        }
+                        formatNumbers={formatNumber}
+                    />
+                </Box>
+                <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
+                    <LocalAutocompleteMulti
+                        selected={selectedOriginalSources}
+                        onSelect={handleSelectSources}
+                        items={originalSources}
+                        primaryItemOpt={'key'}
+                        secondaryItemOpt={'doc_count'}
+                        placeholder={
+                            <span>
+                            <i className="fa fa-md fa-file-text"/> Type and select sources
+                        </span>
+                        }
+                        formatNumbers={formatNumber}
+                    />
+                </Box>
                 <Box display={'flex'} alignItems={'flex-end'}
                      style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
                     <SearchSupplier onSelectSupplier={handleSelectSupplier} selectedSupplier={selectedSupplier}/>

@@ -73,58 +73,64 @@ const RightClickMenu = () => {
         // do all the staff needed to get the bellow info
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'product');
 
-        // set the new products object to redux store
-        const product = { original: selected, foodakai: null };
-        dispatch(addProduct(product, incident_id));
+        if (incident_id) {
+            // set the new products object to redux store
+            const product = {original: selected, foodakai: null};
+            dispatch(addProduct(product, incident_id));
 
-        // set the annotations to redux store
-        if (field === 'title') {
-            dispatch(setTitles(incident_id, subText, formatted));
-        } else if (field === 'description') {
-            dispatch(setDescriptions(incident_id, subText, formatted));
+            // set the annotations to redux store
+            if (field === 'title') {
+                dispatch(setTitles(incident_id, subText, formatted));
+            } else if (field === 'description') {
+                dispatch(setDescriptions(incident_id, subText, formatted));
+            }
         }
     };
     const handleReplaceProducts = ({ event }) => {
         // comments same as above
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'product');
 
-        if (field === 'title') {
-            dispatch(setTitles(incident_id, subText, formatted));
-        } else if (field === 'description') {
-            dispatch(setDescriptions(incident_id, subText, formatted));
+        if (incident_id) {
+            if (field === 'title') {
+                dispatch(setTitles(incident_id, subText, formatted));
+            } else if (field === 'description') {
+                dispatch(setDescriptions(incident_id, subText, formatted));
+            }
+
+            const product = {original: selected, foodakai: null};
+            dispatch(replaceProducts([product], incident_id));
         }
-
-        const product = { original: selected, foodakai: null };
-        dispatch(replaceProducts([product], incident_id));
-
     };
     const handleAddHazard = ({ event }) => {
         // comments same as above
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'hazard');
 
-        const hazard = { original: selected, foodakai: null };
-        dispatch(addHazard(hazard, incident_id));
+        if (incident_id) {
+            const hazard = {original: selected, foodakai: null};
+            dispatch(addHazard(hazard, incident_id));
 
-        if (field === 'title') {
-            dispatch(setTitles(incident_id, subText, formatted));
-        } else if (field === 'description') {
-            dispatch(setDescriptions(incident_id, subText, formatted));
+            if (field === 'title') {
+                dispatch(setTitles(incident_id, subText, formatted));
+            } else if (field === 'description') {
+                dispatch(setDescriptions(incident_id, subText, formatted));
+            }
         }
     };
     const handleReplaceHazards = ({ event }) => {
         // comments same as above
         const { selected, incident_id, field, subText, formatted } = getInfoForIncident(event, 'hazard');
 
-        if (field === 'title') {
-            dispatch(setTitles(incident_id, subText, formatted));
-        } else if (field === 'description') {
-            dispatch(setDescriptions(incident_id, subText, formatted));
+        if (incident_id) {
+            if (field === 'title') {
+                dispatch(setTitles(incident_id, subText, formatted));
+            } else if (field === 'description') {
+                dispatch(setDescriptions(incident_id, subText, formatted));
+            }
+
+            const hazard = {original: selected, foodakai: null};
+
+            dispatch(replaceHazards([hazard], incident_id));
         }
-
-        const hazard = { original: selected, foodakai: null };
-
-        dispatch(replaceHazards([hazard], incident_id));
-
     };
     return (
         <Menu id="menu_id">
