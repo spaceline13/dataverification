@@ -80,7 +80,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
         }
     };
     const handleEditCountry = (incident_id, country) => {
-        dispatch(editCountry(country ? country.value : null, incident_id));
+        dispatch(editCountry(country ? country.value : [], incident_id));
     };
     const handleRemoveProduct = (incident_id, product) => {
         dispatch(removeProduct(product, incident_id));
