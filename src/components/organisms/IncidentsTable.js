@@ -25,6 +25,7 @@ import {
 import moment from "moment";
 import RemoteAutocomplete from "../molecules/RemoteAutocomplete";
 import Box from "@material-ui/core/Box";
+import {MenuProvider} from "react-contexify";
 
 const Product = styled.div`
     border: 1px solid #84a3bd;
@@ -193,15 +194,38 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                     </a>
                                 </td>
                                 <td data-id={incident.id} data-field={'title'}>
-                                    <Text>{titles[incident.id]}</Text>
+                                    <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
+                                        <Text>{titles[incident.id]}</Text>
+                                    </MenuProvider>
                                 </td>
                                 <td data-id={incident.id} data-field={'description'}>
                                     <Text>
-                                        {descriptions[incident.id] && (
-                                            <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass=""
-                                                          expanded={false} width={'770'}>
-                                                {descriptions[incident.id]}
-                                            </ShowMoreText>
+                                        {descriptions[incident.id] ? (
+                                            <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
+                                                <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass=""
+                                                              expanded={false} width={'770'}>
+                                                    {descriptions[incident.id]}
+                                                </ShowMoreText>
+                                            </MenuProvider>
+                                        ) : (
+                                            <Grid container>
+                                                <Grid item xs={6}>
+                                                    <center>
+                                                        <b>Remote Products</b><br />
+                                                        {incident.remoteProducts.map(product =>
+                                                            <div>{product.value}</div>
+                                                        )}
+                                                    </center>
+                                                </Grid>
+                                                <Grid item xs={6}>
+                                                    <center>
+                                                        <b>Remote Hazards</b><br />
+                                                        {incident.remoteHazards.map(hazard =>
+                                                            <div>{hazard.value}</div>
+                                                        )}
+                                                    </center>
+                                                </Grid>
+                                            </Grid>
                                         )}
                                     </Text>
                                 </td>

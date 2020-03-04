@@ -19,8 +19,7 @@ import {
 import IncidentsTable from '../organisms/IncidentsTable';
 import {
     addIncidents,
-    addIncidentsPagesLoaded, importSavedIncidents,
-    setFetchingIncidents, setHazardsTaxonomy,
+    addIncidentsPagesLoaded, setFetchingIncidents, setHazardsTaxonomy,
     setIncidents,
     setIncidentsCount,
     setProductsTaxonomy
@@ -31,7 +30,7 @@ import withCheckCommunity from '../molecules/withCheckCommunity';
 import { PAGE_SIZE } from '../../consts';
 import { getFetchingIncidents, getIncidents } from '../../redux/selectors/mainSelectors';
 import Header from '../organisms/Header';
-import {setLoadingCuration, setOriginalSources, setRemoteProducts} from '../../redux/actions/filterActions';
+import {setOriginalSources, setRemoteProducts} from '../../redux/actions/filterActions';
 import Filters from '../organisms/Filters';
 import LogoContentsTemplate from '../templates/LogoContentsTemplate';
 import {fetchHazardsTaxonomy, fetchProductsTaxonomy} from "../../controllers/TaxonomiesController";
@@ -108,9 +107,7 @@ const HomePage = () => {
                             {user ? (
                                 <>
                                     <Filters refreshDropdowns={fetchFiltered} />
-                                    <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
-                                        <IncidentsTable currentPageItems={currentPageItems} user={user} onSaveIncident={handleSaveIncident} />
-                                    </MenuProvider>
+                                    <IncidentsTable currentPageItems={currentPageItems} user={user} onSaveIncident={handleSaveIncident} />
                                     <RightClickMenu />
                                     <Header isFooter refreshResults={fetchFiltered} onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />
                                 </>
