@@ -147,7 +147,7 @@ const main = (state = initialState, action) => {
             productsArray.forEach(product => {
                 if (!product.foodakai) {
                     const { bestMatch } = stringSimilarity.findBestMatch(product.original.toLowerCase(), state.productsTaxonomy);
-                    if (bestMatch.rating > 0.9) product.foodakai = bestMatch.target;
+                    if (bestMatch.rating > 0.8) product.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
             });
@@ -176,7 +176,7 @@ const main = (state = initialState, action) => {
                 // check incident's product against Taxonomy and autofill
                 if (!product.foodakai) {
                     const { bestMatch } = stringSimilarity.findBestMatch(product.original.toLowerCase(), state.productsTaxonomy);
-                    if (bestMatch.rating > 0.9) product.foodakai = bestMatch.target;
+                    if (bestMatch.rating > 0.8) product.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
 
