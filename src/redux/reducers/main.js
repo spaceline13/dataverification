@@ -224,7 +224,7 @@ const main = (state = initialState, action) => {
             hazardsArray.forEach(hazard => {
                 if (!hazard.foodakai) {
                     // specific hack for specific hazard
-                    if (hazard.original === 'Produced Without Benefit of Inspection') {
+                    if (hazard.original.indexOf('Produced Without Benefit') !== -1) {
                         hazard.foodakai = 'unauthorised use of federal inspection mark';
                     } else { // check for matching
                         const original = hazard.original.toLowerCase();
@@ -275,7 +275,7 @@ const main = (state = initialState, action) => {
                 // check incident's hazard against Taxonomy and autofill
                 if (!hazard.foodakai) {
                     // specific hack for specific hazard
-                    if (hazard.original === 'Produced Without Benefit of Inspection') {
+                    if (hazard.original.indexOf('Produced Without Benefit') !== -1) {
                         hazard.foodakai = 'unauthorised use of federal inspection mark';
                     } else { // check for matching
                         const original = hazard.original.toLowerCase();
