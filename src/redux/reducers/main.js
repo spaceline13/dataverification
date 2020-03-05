@@ -146,7 +146,16 @@ const main = (state = initialState, action) => {
             // check incident's products array against Taxonomy and autofill
             productsArray.forEach(product => {
                 if (!product.foodakai) {
-                    const { bestMatch } = stringSimilarity.findBestMatch(product.original.toLowerCase(), state.productsTaxonomy);
+                    const original = product.original.toLowerCase();
+                    let { bestMatch } = stringSimilarity.findBestMatch(original, state.productsTaxonomy);
+
+                    // transform , seperated ex. Beans, Dried => Dried Beans
+                    if (original.indexOf(', ') !== -1) {
+                        const array = original.split(', ').reverse();
+                        const comma_bestMatch = stringSimilarity.findBestMatch(array.join(' '), state.productsTaxonomy).bestMatch;
+                        if (comma_bestMatch.rating > bestMatch.rating) bestMatch = comma_bestMatch;
+                    }
+
                     if (bestMatch.rating > 0.8) product.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
@@ -175,7 +184,16 @@ const main = (state = initialState, action) => {
             if (!state.products[incident_id].find(pr => pr.original === product.original)) {
                 // check incident's product against Taxonomy and autofill
                 if (!product.foodakai) {
-                    const { bestMatch } = stringSimilarity.findBestMatch(product.original.toLowerCase(), state.productsTaxonomy);
+                    const original = product.original.toLowerCase();
+                    let { bestMatch } = stringSimilarity.findBestMatch(original, state.productsTaxonomy);
+
+                    // transform , seperated ex. Beans, Dried => Dried Beans
+                    if (original.indexOf(', ') !== -1) {
+                        const array = original.split(', ').reverse();
+                        const comma_bestMatch = stringSimilarity.findBestMatch(array.join(' '), state.productsTaxonomy).bestMatch;
+                        if (comma_bestMatch.rating > bestMatch.rating) bestMatch = comma_bestMatch;
+                    }
+
                     if (bestMatch.rating > 0.8) product.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
@@ -205,7 +223,24 @@ const main = (state = initialState, action) => {
             // check incident's hazards array against Taxonomy and autofill
             hazardsArray.forEach(hazard => {
                 if (!hazard.foodakai) {
-                    const { bestMatch } = stringSimilarity.findBestMatch(hazard.original.toLowerCase(), state.hazardsTaxonomy);
+                    const original = hazard.original.toLowerCase();
+                    let { bestMatch } = stringSimilarity.findBestMatch(original, state.hazardsTaxonomy);
+
+                    // transform f to ph and check
+                    if (original.indexOf('f') !== -1) {
+                        const ph_original = original.replace('f', 'ph');
+                        const ph_bestMatch = stringSimilarity.findBestMatch(ph_original, state.hazardsTaxonomy).bestMatch;
+                        console.log(ph_bestMatch, bestMatch);
+                        if (ph_bestMatch.rating > bestMatch.rating) bestMatch = ph_bestMatch;
+                    }
+
+                    // transform f to ph and check
+                    if (original.indexOf('ph') !== -1) {
+                        const f_original = original.replace('ph', 'f');
+                        const f_bestMatch = stringSimilarity.findBestMatch(f_original, state.hazardsTaxonomy).bestMatch;
+                        if (f_bestMatch.rating > bestMatch.rating) bestMatch = f_bestMatch;
+                    }
+
                     if (bestMatch.rating > 0.9) hazard.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
@@ -234,7 +269,23 @@ const main = (state = initialState, action) => {
             if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
                 // check incident's hazard against Taxonomy and autofill
                 if (!hazard.foodakai) {
-                    const { bestMatch } = stringSimilarity.findBestMatch(hazard.original.toLowerCase(), state.hazardsTaxonomy);
+                    const original = hazard.original.toLowerCase();
+                    let { bestMatch } = stringSimilarity.findBestMatch(original, state.hazardsTaxonomy);
+
+                    // transform f to ph and check
+                    if (original.indexOf('f') !== -1) {
+                        const ph_original = original.replace('f', 'ph');
+                        const ph_bestMatch = stringSimilarity.findBestMatch(ph_original, state.hazardsTaxonomy).bestMatch;
+                        if (ph_bestMatch.rating > bestMatch.rating) bestMatch = ph_bestMatch;
+                    }
+
+                    // transform f to ph and check
+                    if (original.indexOf('ph') !== -1) {
+                        const f_original = original.replace('ph', 'f');
+                        const f_bestMatch = stringSimilarity.findBestMatch(f_original, state.hazardsTaxonomy).bestMatch;
+                        if (f_bestMatch.rating > bestMatch.rating) bestMatch = f_bestMatch;
+                    }
+
                     if (bestMatch.rating > 0.9) hazard.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }

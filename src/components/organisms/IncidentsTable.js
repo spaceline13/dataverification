@@ -119,8 +119,15 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                     <Text>
                                         {descriptions[incident.id] ? (
                                             <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
-                                                <ShowMoreText lines={5} more="Show more" less="Show less" anchorClass=""
-                                                              expanded={false} width={'770'}>
+                                                <ShowMoreText
+                                                    key={`showmore-${incident.id}`}
+                                                    lines={5}
+                                                    more="Show more"
+                                                    less="Show less"
+                                                    anchorClass=""
+                                                    expanded={false}
+                                                    width={'770'}
+                                                >
                                                     {descriptions[incident.id]}
                                                 </ShowMoreText>
                                             </MenuProvider>
