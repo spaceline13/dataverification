@@ -26,7 +26,7 @@ export function getAllIncidents(req, res) {
     if (pageSize) pageSize = parseInt(pageSize);
     if (page) page = parseInt(page);
     Incident.find()
-        .select('id user title description products hazards country supplier')
+        .select('id user title description products hazards country supplier createdAt')
         .limit(pageSize ? parseInt(pageSize) : null)
         .skip(pageSize * page)
         .then(allIncidents => {

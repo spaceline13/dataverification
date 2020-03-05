@@ -36,5 +36,5 @@ const incidentSchema = new mongoose.Schema({
         type: Array,
         required: false,
     },
-});
+}, { timestamps: true });
 export default mongoose.model('Incident', incidentSchema);
