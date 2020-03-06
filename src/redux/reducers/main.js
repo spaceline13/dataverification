@@ -156,7 +156,7 @@ const main = (state = initialState, action) => {
                         if (comma_bestMatch.rating > bestMatch.rating) bestMatch = comma_bestMatch;
                     }
 
-                    if (bestMatch.rating > 0.8) product.foodakai = bestMatch.target;
+                    if (bestMatch.rating > 0.78) product.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
             });
@@ -194,7 +194,7 @@ const main = (state = initialState, action) => {
                         if (comma_bestMatch.rating > bestMatch.rating) bestMatch = comma_bestMatch;
                     }
 
-                    if (bestMatch.rating > 0.8) product.foodakai = bestMatch.target;
+                    if (bestMatch.rating > 0.78) product.foodakai = bestMatch.target;
                     console.log(bestMatch);
                 }
 
@@ -223,18 +223,17 @@ const main = (state = initialState, action) => {
             // check incident's hazards array against Taxonomy and autofill
             hazardsArray.forEach(hazard => {
                 if (!hazard.foodakai) {
+                    const original = hazard.original.toLowerCase();
                     // specific hack for specific hazard
-                    if (hazard.original.indexOf('Produced Without Benefit') !== -1) {
+                    if ((original.indexOf('produced without') !== -1) && (original.indexOf('benefit')  !== -1) && (original.indexOf('inspection')  !== -1)) {
                         hazard.foodakai = 'unauthorised use of federal inspection mark';
                     } else { // check for matching
-                        const original = hazard.original.toLowerCase();
                         let {bestMatch} = stringSimilarity.findBestMatch(original, state.hazardsTaxonomy);
 
                         // transform f to ph and check
                         if (original.indexOf('f') !== -1) {
                             const ph_original = original.replace('f', 'ph');
                             const ph_bestMatch = stringSimilarity.findBestMatch(ph_original, state.hazardsTaxonomy).bestMatch;
-                            console.log(ph_bestMatch, bestMatch);
                             if (ph_bestMatch.rating > bestMatch.rating) bestMatch = ph_bestMatch;
                         }
 
@@ -245,7 +244,7 @@ const main = (state = initialState, action) => {
                             if (f_bestMatch.rating > bestMatch.rating) bestMatch = f_bestMatch;
                         }
 
-                        if (bestMatch.rating > 0.9) hazard.foodakai = bestMatch.target;
+                        if (bestMatch.rating > 0.8) hazard.foodakai = bestMatch.target;
                         console.log(bestMatch);
                     }
                 }
@@ -274,18 +273,17 @@ const main = (state = initialState, action) => {
             if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
                 // check incident's hazard against Taxonomy and autofill
                 if (!hazard.foodakai) {
+                    const original = hazard.original.toLowerCase();
                     // specific hack for specific hazard
-                    if (hazard.original.indexOf('Produced Without Benefit') !== -1) {
+                    if ((original.indexOf('produced without') !== -1) && (original.indexOf('benefit')  !== -1) && (original.indexOf('inspection')  !== -1)) {
                         hazard.foodakai = 'unauthorised use of federal inspection mark';
                     } else { // check for matching
-                        const original = hazard.original.toLowerCase();
                         let {bestMatch} = stringSimilarity.findBestMatch(original, state.hazardsTaxonomy);
 
                         // transform f to ph and check
                         if (original.indexOf('f') !== -1) {
                             const ph_original = original.replace('f', 'ph');
                             const ph_bestMatch = stringSimilarity.findBestMatch(ph_original, state.hazardsTaxonomy).bestMatch;
-                            console.log(ph_bestMatch, bestMatch);
                             if (ph_bestMatch.rating > bestMatch.rating) bestMatch = ph_bestMatch;
                         }
 
@@ -296,7 +294,7 @@ const main = (state = initialState, action) => {
                             if (f_bestMatch.rating > bestMatch.rating) bestMatch = f_bestMatch;
                         }
 
-                        if (bestMatch.rating > 0.9) hazard.foodakai = bestMatch.target;
+                        if (bestMatch.rating > 0.8) hazard.foodakai = bestMatch.target;
                         console.log(bestMatch);
                     }
                 }
