@@ -39,28 +39,33 @@ const Filters = ({ refreshDropdowns }) => {
     const selectedPossiblyOk = useSelector(getPossiblyOk);
 
     const handleSelectProducts = products => {
+        const comingFrom = products.length > 0 ? 'remoteProducts' : null; //let the filters reset
         dispatch(setSelectedRemoteProducts(products));
-        refreshDropdowns('remoteProducts', products, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, products, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
     };
 
     const handleSelectSources = sources => {
+        const comingFrom = sources.length > 0 ? 'originalSources' : null; //let the filters reset
         dispatch(setSelectedOriginalSources(sources));
-        refreshDropdowns('originalSources', selectedRemoteProducts, sources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, sources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
     };
 
     const handleSelectSupplier = supplier => {
+        const comingFrom = 'supplier';
         dispatch(setSelectedSupplier(supplier));
-        refreshDropdowns('supplier', selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange, selectedPossiblyOk);
     };
 
     const handleSelectDateRange = dateRange => {
+        const comingFrom = 'dateRange';
         dispatch(setSelectedDateRange(dateRange));
-        refreshDropdowns('dateRange', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk);
     };
 
     const handlePossiblyOk = event => {
+        const comingFrom = 'possiblyOk';
         dispatch(setPossiblyOk(event.target.checked));
-        refreshDropdowns('possiblyOk', selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, event.target.checked);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, event.target.checked);
     };
 
     if (!(loadingCuration || loadingIncidents)) {
