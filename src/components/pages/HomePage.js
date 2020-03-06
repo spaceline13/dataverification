@@ -106,7 +106,7 @@ const HomePage = () => {
                         <>
                             {user ? (
                                 <>
-                                    <Filters refreshDropdowns={fetchFiltered} />
+                                    <Filters refreshDropdowns={fetchFiltered} setCurrentPage={setCurrentPage} />
                                     <IncidentsTable currentPageItems={currentPageItems} user={user} onSaveIncident={handleSaveIncident} />
                                     <RightClickMenu />
                                     <Header isFooter refreshResults={fetchFiltered} onLoadMorePages={handleAskForMoreIncidents} currentPage={currentPage} pageItemsCount={pageItemsCount} setCurrentPage={setCurrentPage} />

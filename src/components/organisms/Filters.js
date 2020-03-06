@@ -26,7 +26,7 @@ import {getFetchingIncidents} from "../../redux/selectors/mainSelectors";
 
 export const formatNumber = num => num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
 
-const Filters = ({ refreshDropdowns }) => {
+const Filters = ({ refreshDropdowns, setCurrentPage }) => {
     const dispatch = useDispatch();
     const loadingCuration = useSelector(getLoadingCuration);
     const loadingIncidents = useSelector(getFetchingIncidents);
@@ -42,30 +42,35 @@ const Filters = ({ refreshDropdowns }) => {
         const comingFrom = products.length > 0 ? 'remoteProducts' : null; //let the filters reset
         dispatch(setSelectedRemoteProducts(products));
         refreshDropdowns(comingFrom, products, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
+        setCurrentPage(0);
     };
 
     const handleSelectSources = sources => {
         const comingFrom = sources.length > 0 ? 'originalSources' : null; //let the filters reset
         dispatch(setSelectedOriginalSources(sources));
         refreshDropdowns(comingFrom, selectedRemoteProducts, sources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
+        setCurrentPage(0);
     };
 
     const handleSelectSupplier = supplier => {
         const comingFrom = 'supplier';
         dispatch(setSelectedSupplier(supplier));
         refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange, selectedPossiblyOk);
+        setCurrentPage(0);
     };
 
     const handleSelectDateRange = dateRange => {
         const comingFrom = 'dateRange';
         dispatch(setSelectedDateRange(dateRange));
         refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk);
+        setCurrentPage(0);
     };
 
     const handlePossiblyOk = event => {
         const comingFrom = 'possiblyOk';
         dispatch(setPossiblyOk(event.target.checked));
         refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, event.target.checked);
+        setCurrentPage(0);
     };
 
     if (!(loadingCuration || loadingIncidents)) {

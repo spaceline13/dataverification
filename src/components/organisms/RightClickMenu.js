@@ -38,6 +38,8 @@ const findSubText = (element, selected) => {
     let subText;
     if (current.indexOf(selected) !== -1) {
         subText = current;
+    } else if (current.replace('  ', ' ').indexOf(selected) !== -1) { //fix for specific bug that adds two blanks to the current string
+        subText = current;
     } else if ((prev + ' ' + current).indexOf(selected) !== -1) {
         subText = prev + ' ' + current;
     } else if ((current + ' ' + next).indexOf(selected) !== -1) {
