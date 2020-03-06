@@ -27,9 +27,21 @@ const Date = styled.div`
     position: absolute;
     transform: rotate(90deg);
     transform-origin: left top 0;
-    right: -44px;
+    right: -48px;
     margin-top: 22px;
     font-size: 12px;
+`;
+const User = styled.div`
+    position: absolute;
+    -webkit-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
+    -webkit-transform-origin: left top 0;
+    -ms-transform-origin: left top 0;
+    transform-origin: left top 0;
+    margin-top: 113px;
+    font-size: 12px;
+    color: #2d7542;
 `;
 
 const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
@@ -106,6 +118,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                         return (
                             <tr key={indexI} style={trStyling}>
                                 <td style={{ paddingRight: '0px' }}>
+                                    {incident.approvedFrom && <User>{incident.approvedFrom.substring(0, incident.approvedFrom.indexOf('@'))}</User>}
                                     <a href={`http://data.foodakai.com/node/${incident.internalId}`} target={'_blank'} rel={'noopener noreferrer'}>
                                         <i className="fas fa-external-link-alt" />
                                     </a>
@@ -121,7 +134,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                             <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
                                                 <ShowMoreText
                                                     key={`showmore-${incident.id}`}
-                                                    lines={5}
+                                                    lines={7}
                                                     more="Show more"
                                                     less="Show less"
                                                     anchorClass=""
