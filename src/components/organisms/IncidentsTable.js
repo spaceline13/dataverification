@@ -134,7 +134,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                             <MenuProvider id="menu_id" style={{ display: 'inline-block' }}>
                                                 <ShowMoreText
                                                     key={`showmore-${incident.id}`}
-                                                    lines={7}
+                                                    lines={15}
                                                     more="Show more"
                                                     less="Show less"
                                                     anchorClass=""
