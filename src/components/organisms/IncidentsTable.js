@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import ShowMoreText from 'react-show-more-text';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
@@ -23,6 +23,7 @@ import {MenuProvider} from "react-contexify";
 import Hazards from "./Hazards";
 import Products from "./Products";
 import RemoteProductsHazards from "./RemoteProductsHazards";
+import KeyboardEventHandler from 'react-keyboard-event-handler';
 
 const Date = styled.div`
     position: absolute;
@@ -54,6 +55,8 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     const countries = useSelector(getCountries);
     const suppliers = useSelector(getSuppliers);
 
+    const [selectedIncident, setSelectedIncident] = useState();
+
     const handleEditCountry = (incident_id, country) => {
         dispatch(editCountry(country ? country.value : [], incident_id));
     };
@@ -70,6 +73,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
             country: countries[incident_id],
         }, 'add', () => {
             dispatch(setApproved(incident_id, user.email));
+            setSelectedIncident(null);
         });
     };
     const handleDissapprove = incident_id => {
@@ -90,6 +94,22 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     if (currentPageItems.length > 0) {
         return (
             <div>
+                <KeyboardEventHandler
+                    handleKeys={['alt+space']}
+                    onKeyEvent={() => {
+                        if (selectedIncident) {
+                            const checked =
+                                hazards[selectedIncident.id] &&
+                                hazards[selectedIncident.id].length > 0 &&
+                                !hazards[selectedIncident.id].find(hz => !hz.foodakai) &&
+                                products[selectedIncident.id] &&
+                                products[selectedIncident.id].length > 0 &&
+                                !products[selectedIncident.id].find(pr => !pr.foodakai) &&
+                                countries[selectedIncident.id].length > 0;
+                            if (checked) handleApprove(selectedIncident.id);
+                        }
+                    }}
+                />
                 <table className="table table-hover-dark table-striped" style={{color: '#636971'}}>
                     <thead>
                     <tr>
@@ -112,12 +132,15 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                             products[incident.id].length > 0 &&
                             !products[incident.id].find(pr => !pr.foodakai) &&
                             countries[incident.id].length > 0;
-                        const trStyling = incident.approvedFrom ? {
+                        const trStyling = selectedIncident===incident ? {
+                            padding: '20px 0px',
+                            background: 'rgba(183, 181, 187, 0.21)'
+                        } : incident.approvedFrom ? {
                             padding: '20px 0px',
                             background: 'rgba(113,195,80,0.2)'
                         } : {padding: '20px 0px'};
                         return (
-                            <tr key={indexI} style={trStyling}>
+                            <tr key={indexI} style={trStyling} onClick={()=>{setSelectedIncident(incident)}}>
                                 <td style={{ paddingRight: '0px' }}>
                                     {incident.approvedFrom && <User>{incident.approvedFrom.substring(0, incident.approvedFrom.indexOf('@'))}</User>}
                                     <a href={`http://data.foodakai.com/node/${incident.internalId}`} target={'_blank'} rel={'noopener noreferrer'}>
