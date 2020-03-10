@@ -11,7 +11,7 @@ const Product = styled.div`
     border: 1px solid #84a3bd;
     border-radius: 3px;
     padding: 4px;
-    background: #ecf6ff;
+    background: #d9edff;
     margin-right: 4px;
 `;
 

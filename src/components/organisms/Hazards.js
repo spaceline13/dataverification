@@ -108,7 +108,8 @@ const Hazards = ({ incident }) => {
                         borderRadius: '3px',
                         float: 'right',
                         marginRight: '4px',
-                        marginTop: '3px'
+                        marginTop: '3px',
+                        background: 'rgb(246, 242, 239)'
                     }}><i className="fas fa-plus"></i></button>
                 </Grid>
             </Grid>

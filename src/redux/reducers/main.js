@@ -75,13 +75,13 @@ const checkHazardAgainstTaxonomyAndAutofill = (hazard, hazardsTaxonomy) => {
                 if (f_bestMatch.rating > bestMatch.rating) bestMatch = f_bestMatch;
             }
 
-            // check for string + 'products thereof'
-            if (bestMatch.rating < 0.8) {
+            // check for string + 'products thereof' in hazards
+            if (bestMatch.rating < 0.8 && original.length > 3) {
                 const products_thereof_bestMatch = stringSimilarity.findBestMatch(original + ' and products thereof', hazardsTaxonomy).bestMatch;
-                if ((products_thereof_bestMatch.rating > 0.85) && (products_thereof_bestMatch.rating > bestMatch.rating)) bestMatch = products_thereof_bestMatch;
+                if ((products_thereof_bestMatch.rating > 0.9) && (products_thereof_bestMatch.rating > bestMatch.rating)) bestMatch = products_thereof_bestMatch;
             }
 
-            if (bestMatch.rating > 0.8) hazard.foodakai = bestMatch.target;
+            if (bestMatch.rating > 0.775) hazard.foodakai = bestMatch.target;
             console.log(bestMatch);
         }
     }

@@ -22,6 +22,7 @@ import moment from "moment";
 import {MenuProvider} from "react-contexify";
 import Hazards from "./Hazards";
 import Products from "./Products";
+import RemoteProductsHazards from "./RemoteProductsHazards";
 
 const Date = styled.div`
     position: absolute;
@@ -145,24 +146,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
                                                 </ShowMoreText>
                                             </MenuProvider>
                                         ) : (
-                                            <Grid container>
-                                                <Grid item xs={6}>
-                                                    <center>
-                                                        <b>Remote Products</b><br />
-                                                        {incident.remoteProducts.map(product =>
-                                                            <div>{product.value}</div>
-                                                        )}
-                                                    </center>
-                                                </Grid>
-                                                <Grid item xs={6}>
-                                                    <center>
-                                                        <b>Remote Hazards</b><br />
-                                                        {incident.remoteHazards.map(hazard =>
-                                                            <div>{hazard.value}</div>
-                                                        )}
-                                                    </center>
-                                                </Grid>
-                                            </Grid>
+                                            <RemoteProductsHazards incident={incident} />
                                         )}
                                     </Text>
                                 </td>
