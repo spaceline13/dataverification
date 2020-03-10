@@ -95,7 +95,7 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
         return (
             <div>
                 <KeyboardEventHandler
-                    handleKeys={['alt+space']}
+                    handleKeys={['shift+a']}
                     onKeyEvent={() => {
                         if (selectedIncident) {
                             const checked =
