@@ -13,7 +13,7 @@ import {
     getOneHazard,
     getPossiblyOk,
     getSelectedDateRange,
-    getSelectedOriginalSources,
+    getSelectedOriginalSources, getSelectedRemoteHazards,
     getSelectedRemoteProducts, getSelectedSupplier
 } from "../../redux/selectors/filterSelectors";
 import {useAuth0} from "../molecules/Auth0Wrapper";
@@ -29,7 +29,7 @@ const Header = ({ setCurrentPage, refreshResults, pageItemsCount, onLoadMorePage
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showLoadModal, setShowLoadModal] = useState(false);
     const selectedRemoteProducts = useSelector(getSelectedRemoteProducts);
-    const selectedRemoteHazards = useSelector(getSelectedRemoteProducts);
+    const selectedRemoteHazards = useSelector(getSelectedRemoteHazards);
     const selectedOriginalSources = useSelector(getSelectedOriginalSources);
     const selectedSupplier = useSelector(getSelectedSupplier);
     const selectedDateRange = useSelector(getSelectedDateRange);

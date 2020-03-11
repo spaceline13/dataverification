@@ -10,6 +10,7 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, haz
     const productString = ifArrayCreateStringForQuery(product);
     const hazardString = ifArrayCreateStringForQuery(hazard);
     const sourceString = ifArrayCreateStringForQuery(source);
+    console.log(product, hazard);
 
     const options = {
         smart: false,
