@@ -3,19 +3,20 @@ import React from 'react';
 import Toggle from 'react-toggle';
 import "react-toggle/style.css";
 import {
-    getLoadingCuration,
-    getOriginalSources, getPossiblyOk,
+    getLoadingCuration, getOneHazard,
+    getOriginalSources, getPossiblyOk, getRemoteHazards,
     getRemoteProducts, getSelectedDateRange,
-    getSelectedOriginalSources,
+    getSelectedOriginalSources, getSelectedRemoteHazards,
     getSelectedRemoteProducts,
     getSelectedSupplier
 } from '../../redux/selectors/filterSelectors';
 import LocalAutocompleteMulti from '../molecules/LocalAutocompleteMulti';
 import Box from "@material-ui/core/Box";
 import {
+    setOneHazard,
     setPossiblyOk,
     setSelectedDateRange,
-    setSelectedOriginalSources,
+    setSelectedOriginalSources, setSelectedRemoteHazards,
     setSelectedRemoteProducts,
     setSelectedSupplier
 } from "../../redux/actions/filterActions";
@@ -31,45 +32,63 @@ const Filters = ({ refreshDropdowns, setCurrentPage }) => {
     const loadingCuration = useSelector(getLoadingCuration);
     const loadingIncidents = useSelector(getFetchingIncidents);
     const remoteProducts = useSelector(getRemoteProducts);
+    const remoteHazards = useSelector(getRemoteHazards);
     const originalSources = useSelector(getOriginalSources);
     const selectedRemoteProducts = useSelector(getSelectedRemoteProducts);
+    const selectedRemoteHazards = useSelector(getSelectedRemoteHazards);
     const selectedOriginalSources = useSelector(getSelectedOriginalSources);
     const selectedSupplier = useSelector(getSelectedSupplier);
     const selectedDateRange = useSelector(getSelectedDateRange);
     const selectedPossiblyOk = useSelector(getPossiblyOk);
+    const selectedOneHazard = useSelector(getOneHazard);
 
     const handleSelectProducts = products => {
         const comingFrom = products.length > 0 ? 'remoteProducts' : null; //let the filters reset
         dispatch(setSelectedRemoteProducts(products));
-        refreshDropdowns(comingFrom, products, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, products, selectedRemoteHazards, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk, selectedOneHazard);
+        setCurrentPage(0);
+    };
+
+    const handleSelectHazards = hazards => {
+        const comingFrom = hazards.length > 0 ? 'remoteHazards' : null; //let the filters reset
+        dispatch(setSelectedRemoteHazards(hazards));
+        refreshDropdowns(comingFrom, selectedRemoteProducts, hazards, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk, selectedOneHazard);
         setCurrentPage(0);
     };
 
     const handleSelectSources = sources => {
         const comingFrom = sources.length > 0 ? 'originalSources' : null; //let the filters reset
         dispatch(setSelectedOriginalSources(sources));
-        refreshDropdowns(comingFrom, selectedRemoteProducts, sources, selectedSupplier, selectedDateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedRemoteHazards, sources, selectedSupplier, selectedDateRange, selectedPossiblyOk, selectedOneHazard);
         setCurrentPage(0);
     };
 
     const handleSelectSupplier = supplier => {
         const comingFrom = 'supplier';
         dispatch(setSelectedSupplier(supplier));
-        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, supplier, selectedDateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedRemoteHazards, selectedOriginalSources, supplier, selectedDateRange, selectedPossiblyOk, selectedOneHazard);
         setCurrentPage(0);
     };
 
     const handleSelectDateRange = dateRange => {
         const comingFrom = 'dateRange';
         dispatch(setSelectedDateRange(dateRange));
-        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedRemoteHazards, selectedOriginalSources, selectedSupplier, dateRange, selectedPossiblyOk, selectedOneHazard);
         setCurrentPage(0);
     };
 
     const handlePossiblyOk = event => {
         const comingFrom = 'possiblyOk';
         dispatch(setPossiblyOk(event.target.checked));
-        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedOriginalSources, selectedSupplier, selectedDateRange, event.target.checked);
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedRemoteHazards, selectedOriginalSources, selectedSupplier, selectedDateRange, event.target.checked, selectedOneHazard);
+        setCurrentPage(0);
+    };
+
+    const handleOneHazard = event => {
+        const oneHazard = event.target.checked;
+        const comingFrom = 'oneHazard';
+        dispatch(setOneHazard(oneHazard));
+        refreshDropdowns(comingFrom, selectedRemoteProducts, selectedRemoteHazards, selectedOriginalSources, selectedSupplier, selectedDateRange, selectedPossiblyOk, oneHazard);
         setCurrentPage(0);
     };
 
@@ -90,6 +109,30 @@ const Filters = ({ refreshDropdowns, setCurrentPage }) => {
                         }
                         formatNumbers={formatNumber}
                     />
+                </Box>
+                <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
+                    <LocalAutocompleteMulti
+                        selected={selectedRemoteHazards}
+                        onSelect={handleSelectHazards}
+                        items={remoteHazards}
+                        primaryItemOpt={'key'}
+                        secondaryItemOpt={'doc_count'}
+                        placeholder={
+                            <span>
+                            <i className="fa fa-md fa-bar-chart"/> Type and select hazards
+                        </span>
+                        }
+                        formatNumbers={formatNumber}
+                    />
+                </Box>
+                <Box style={{width: '50px', marginRight: '14px'}}>
+                    <Box ml={'10px'} mr={'-10px'}>
+                        <Text size={'8px'} pb={'2px'} pl={'4px'} color={'#797979'}>one hazard</Text>
+                        <Toggle
+                            defaultChecked={selectedOneHazard}
+                            onChange={handleOneHazard}
+                        />
+                    </Box>
                 </Box>
                 <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
                     <LocalAutocompleteMulti

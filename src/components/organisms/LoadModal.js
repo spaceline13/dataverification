@@ -29,7 +29,7 @@ const LoadModal = ({ show, setShow, user, refreshResults }) => {
     const handleLoad = () => {
         dispatch(setLoadingCuration(true));
         fetchCurationFilters(selectedCuration, json => {
-            refreshResults(null, json.curation.data.selectedRemoteProducts, json.curation.data.selectedOriginalSources, json.curation.data.selectedSupplier, json.curation.data.selectedDateRange, json.curation.data.possiblyOk);
+            refreshResults(null, json.curation.data.selectedRemoteProducts, json.curation.data.selectedRemoteHazards, json.curation.data.selectedOriginalSources, json.curation.data.selectedSupplier, json.curation.data.selectedDateRange, json.curation.data.possiblyOk, json.curation.data.oneHazard);
             dispatch(loadCuration(json.curation.data));
             dispatch(setLoadingCuration(false));
             setShow(false);

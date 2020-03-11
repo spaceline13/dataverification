@@ -1,8 +1,8 @@
 import {
-    LOAD_CURATION, SET_LOADING_CURATION, SET_NAME,
-    SET_ORIGINAL_SOURCES, SET_POSSIBLY_OK,
+    LOAD_CURATION, SET_LOADING_CURATION, SET_NAME, SET_ONE_HAZARD,
+    SET_ORIGINAL_SOURCES, SET_POSSIBLY_OK, SET_REMOTE_HAZARDS,
     SET_REMOTE_PRODUCTS, SET_SELECTED_DATE_RANGE,
-    SET_SELECTED_ORIGINAL_SOURCES,
+    SET_SELECTED_ORIGINAL_SOURCES, SET_SELECTED_REMOTE_HAZARDS,
     SET_SELECTED_REMOTE_PRODUCTS, SET_SELECTED_SUPPLIER
 } from '../actionTypes';
 
@@ -35,6 +35,13 @@ export const setRemoteProducts = remoteProducts => ({
     },
 });
 
+export const setRemoteHazards = remoteHazards => ({
+    type: SET_REMOTE_HAZARDS,
+    payload: {
+        remoteHazards,
+    },
+});
+
 export const setOriginalSources = originalSources => ({
     type: SET_ORIGINAL_SOURCES,
     payload: {
@@ -46,6 +53,13 @@ export const setSelectedRemoteProducts = selectedRemoteProducts => ({
     type: SET_SELECTED_REMOTE_PRODUCTS,
     payload: {
         selectedRemoteProducts,
+    },
+});
+
+export const setSelectedRemoteHazards = selectedRemoteHazards => ({
+    type: SET_SELECTED_REMOTE_HAZARDS,
+    payload: {
+        selectedRemoteHazards,
     },
 });
 
@@ -74,5 +88,12 @@ export const setPossiblyOk = possiblyOk => ({
     type: SET_POSSIBLY_OK,
     payload: {
         possiblyOk,
+    },
+});
+
+export const setOneHazard = oneHazard => ({
+    type: SET_ONE_HAZARD,
+    payload: {
+        oneHazard,
     },
 });

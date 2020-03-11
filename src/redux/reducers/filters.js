@@ -1,8 +1,8 @@
 import {
-    LOAD_CURATION, SET_LOADING_CURATION, SET_NAME,
-    SET_ORIGINAL_SOURCES, SET_POSSIBLY_OK,
+    LOAD_CURATION, SET_LOADING_CURATION, SET_NAME, SET_ONE_HAZARD,
+    SET_ORIGINAL_SOURCES, SET_POSSIBLY_OK, SET_REMOTE_HAZARDS,
     SET_REMOTE_PRODUCTS, SET_SELECTED_DATE_RANGE,
-    SET_SELECTED_ORIGINAL_SOURCES,
+    SET_SELECTED_ORIGINAL_SOURCES, SET_SELECTED_REMOTE_HAZARDS,
     SET_SELECTED_REMOTE_PRODUCTS, SET_SELECTED_SUPPLIER
 } from '../actionTypes';
 
@@ -10,12 +10,15 @@ const initialState = {
     name: '',
     loading: false,
     remoteProducts: [],
+    remoteHazards: [],
     originalSources: [],
     selectedSupplier: null,
     selectedDateRange: { from: null, to: null },
     selectedRemoteProducts: [],
+    selectedRemoteHazards: [],
     selectedOriginalSources: [],
     possiblyOk: false,
+    oneHazard: false,
 };
 
 const filters = (state = initialState, action) => {
@@ -43,6 +46,13 @@ const filters = (state = initialState, action) => {
             return {
                 ...state,
                 remoteProducts,
+            };
+        }
+        case SET_REMOTE_HAZARDS: {
+            const { remoteHazards } = action.payload;
+            return {
+                ...state,
+                remoteHazards,
             };
         }
         case SET_ORIGINAL_SOURCES: {
@@ -73,6 +83,13 @@ const filters = (state = initialState, action) => {
                 selectedRemoteProducts,
             };
         }
+        case SET_SELECTED_REMOTE_HAZARDS: {
+            const { selectedRemoteHazards } = action.payload;
+            return {
+                ...state,
+                selectedRemoteHazards,
+            };
+        }
         case SET_SELECTED_ORIGINAL_SOURCES: {
             const { selectedOriginalSources } = action.payload;
             return {
@@ -85,6 +102,13 @@ const filters = (state = initialState, action) => {
             return {
                 ...state,
                 possiblyOk,
+            };
+        }
+        case SET_ONE_HAZARD: {
+            const { oneHazard } = action.payload;
+            return {
+                ...state,
+                oneHazard,
             };
         }
         default:

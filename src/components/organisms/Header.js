@@ -4,12 +4,13 @@ import { useSelector } from 'react-redux';
 
 import Paginator from '../molecules/Paginator';
 import { PAGE_SIZE } from '../../consts';
-import { getIncidentsCount, getIncidentsPagesLoaded } from '../../redux/selectors/mainSelectors';
+import {getIncidents, getIncidentsCount, getIncidentsPagesLoaded} from '../../redux/selectors/mainSelectors';
 import Button from "@material-ui/core/Button";
 import Text from "../atoms/Text";
 import SaveModal from "./SaveModal";
 import LoadModal from "./LoadModal";
 import {
+    getOneHazard,
     getPossiblyOk,
     getSelectedDateRange,
     getSelectedOriginalSources,
@@ -28,18 +29,21 @@ const Header = ({ setCurrentPage, refreshResults, pageItemsCount, onLoadMorePage
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showLoadModal, setShowLoadModal] = useState(false);
     const selectedRemoteProducts = useSelector(getSelectedRemoteProducts);
+    const selectedRemoteHazards = useSelector(getSelectedRemoteProducts);
     const selectedOriginalSources = useSelector(getSelectedOriginalSources);
     const selectedSupplier = useSelector(getSelectedSupplier);
     const selectedDateRange = useSelector(getSelectedDateRange);
     const selectedPossiblyOk = useSelector(getPossiblyOk);
+    const selectedOneHazard = useSelector(getOneHazard);
 
     const handlePageClick = page => {
         setCurrentPage(page.selected);
-        const pageToAskDataPlatform = Math.floor((page.selected + 1) / (PAGE_SIZE / pageItemsCount)); // ex. 1 = first 100 incidents. 2 = 100-200 incidents etc.
+        let pageToAskDataPlatform = Math.floor((page.selected + 1) / (PAGE_SIZE / pageItemsCount)); // ex. 1 = first 100 incidents. 2 = 100-200 incidents etc.
+        if (selectedOneHazard) pageToAskDataPlatform = page.selected;
         // if DataPlatform page has not been loaded, fetch data
         if (!pagesLoaded.includes(pageToAskDataPlatform)) {
             if (onLoadMorePages) {
-                onLoadMorePages(pageToAskDataPlatform, selectedRemoteProducts, selectedOriginalSources,  selectedSupplier, selectedDateRange, selectedPossiblyOk);
+                onLoadMorePages(pageToAskDataPlatform, selectedRemoteProducts, selectedRemoteHazards, selectedOriginalSources,  selectedSupplier, selectedDateRange, selectedPossiblyOk, selectedOneHazard);
             }
         }
     };

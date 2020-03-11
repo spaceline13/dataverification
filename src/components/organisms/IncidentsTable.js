@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import ShowMoreText from 'react-show-more-text';
 import { useDispatch, useSelector } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
@@ -10,7 +10,7 @@ import Text from '../atoms/Text';
 import {
     getCountries,
     getDescriptions,
-    getHazards,
+    getHazards, getIncidents,
     getProducts,
     getSuppliers,
     getTitles
@@ -46,7 +46,7 @@ const User = styled.div`
     color: #2d7542;
 `;
 
-const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
+const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) => {
     const dispatch = useDispatch();
     const products = useSelector(getProducts);
     const hazards = useSelector(getHazards);
@@ -54,8 +54,17 @@ const IncidentsTable = ({ currentPageItems, user, onSaveIncident }) => {
     const descriptions = useSelector(getDescriptions);
     const countries = useSelector(getCountries);
     const suppliers = useSelector(getSuppliers);
+    const incidents = useSelector(getIncidents);
 
     const [selectedIncident, setSelectedIncident] = useState();
+
+    const [currentPageItems, setCurrentPageItems] = useState([]);
+
+    useEffect(() => {
+        // set items to display for current page (slice of the initial array)
+        setCurrentPageItems(incidents.slice(currentPage * pageItemsCount, currentPage * pageItemsCount + pageItemsCount));
+    }, [incidents, currentPage]);
+
 
     const handleEditCountry = (incident_id, country) => {
         dispatch(editCountry(country ? country.value : [], incident_id));

@@ -6,8 +6,9 @@ import {toastr} from "react-redux-toastr";
 const concatStringsWithOrReducer = (accumulator, currentValue, index) => (index === 0 ? (currentValue.key ? currentValue.key : currentValue) : (accumulator + '||' + (currentValue.key ? currentValue.key : currentValue)));
 export const ifArrayCreateStringForQuery = item => (Array.isArray(item) ? item.reduce(concatStringsWithOrReducer, '') : item);
 
-export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, source, comingFrom, supplier, dateRange, possiblyOk }, pageSize = 100, page = 0, detail = false, from, to, callback) => {
+export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, hazard, source, comingFrom, supplier, dateRange, possiblyOk, oneHazard }, pageSize = 50, page = 0, detail = false, from, to, callback) => {
     const productString = ifArrayCreateStringForQuery(product);
+    const hazardString = ifArrayCreateStringForQuery(hazard);
     const sourceString = ifArrayCreateStringForQuery(source);
 
     const options = {
@@ -26,6 +27,10 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
                 attribute: 'remoteProducts.value.keyword',
                 size: 2000,
             },
+            remoteHazards: {
+                attribute: 'remoteHazards.value.keyword',
+                size: 2000,
+            },
             originalSources: {
                 attribute: 'originalSource.dataSource.keyword',
                 size: 200,
@@ -39,6 +44,7 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
     };
 
     if (productString && productString !== '') options.strictQuery['remoteProducts.value.keyword'] = productString.key ? productString.key : productString;
+    if (hazardString && hazardString !== '') options.strictQuery['remoteHazards.value.keyword'] = hazardString.key ? hazardString.key : hazardString;
     if (sourceString && sourceString !== '') options.strictQuery['originalSource.dataSource.keyword'] = sourceString.key ? sourceString.key : sourceString;
     if (supplier && supplier.title) {
         options.context = 'suppliers';
@@ -53,9 +59,11 @@ export const fetchIncidentsIncludingUnpublished = ({ freetext = '', product, sou
                 count: hits.total,
                 filters: {
                     remoteProducts: aggregations['sterms#remoteProducts'].buckets,
+                    remoteHazards: aggregations['sterms#remoteHazards'].buckets,
                     originalSources: aggregations['sterms#originalSources'].buckets,
                 },
             };
+            if (oneHazard) response.res = response.res.filter(item => item.remoteHazards.length === 1);
 
             if (response.filters[comingFrom]) delete response.filters[comingFrom];
             callback(response);
