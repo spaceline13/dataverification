@@ -42,10 +42,12 @@ export const fetchHazardsFromPlatformToMongo = async (page = 0) => {
 
     const hazards = json.map(item => ({ name: item.label, parents: item.parent, synonyms: item.synonym }));
     addHazards(hazards, page);
-    if (hazards && hazards.length > 0) {
+
+    // PAGING FOR SEARCH API< ANNOTATION API DONT USE IT
+    /*if (hazards && hazards.length > 0) {
         const currPage = ++page;
         setTimeout(() => { fetchHazardsFromPlatformToMongo(currPage) }, 1000);
     } else {
         console.log('added ', page, ' pages of ', pageSize, ' hazards');
-    }
+    }*/
 };

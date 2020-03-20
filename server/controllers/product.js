@@ -41,10 +41,11 @@ export const fetchProductsFromPlatformToMongo = async (page = 0) => {
 
     const products = json.map(item => ({ name: item.label, parents: item.parent, synonyms: item.synonym }));
     addProducts(products, page);
-    if (products && products.length > 0) {
+    // PAGING FOR SEARCH API< ANNOTATION API DONT USE IT
+    /*if (products && products.length > 0) {
         const currPage = ++page;
         setTimeout(() => { fetchProductsFromPlatformToMongo(currPage) }, 1000);
     } else {
         console.log('added ', page, ' pages of ', pageSize, ' products');
-    }
+    }*/
 };
