@@ -2,7 +2,7 @@ import Product from '../models/product';
 import fetch from "node-fetch";
 
 export function addProducts(array, page) {
-    const products = array.map(product => new Product({ name: product }));
+    const products = array.map(product => new Product(product));
     return Product.insertMany(products).then(() =>  {/*console.log('products added page: ', page)*/}).catch(error => console.log(error));
 }
 
@@ -30,27 +30,16 @@ export function getProducts(req, res) {
 }
 
 export const fetchProductsFromPlatformToMongo = async (page = 0) => {
-    const API_KEY = 'db6a04e9-5df3-3f23-8f2a-28b81d1e3aa8';
-    const pageSize = 100;
-    const body = {
-        apikey: API_KEY,
-        pageSize,
-        page,
-        detail: false,
-        entityType: 'product'
-    };
-
-    const response = await fetch('http://api.foodakai.com/search-api-1.0/search/', {
+    const response = await fetch('http://148.251.22.254:8080/nlp-api-1.0/export/term/json?vocabulary=fdk_products', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+        }
     });
     const json = await response.json();
 
-    const products = json.hits.hits.map(item => item._source.title);
+    const products = json.map(item => ({ name: item.label, parents: item.parent, synonyms: item.synonym }));
     addProducts(products, page);
     if (products && products.length > 0) {
         const currPage = ++page;

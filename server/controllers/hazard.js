@@ -2,7 +2,7 @@ import Hazard from '../models/hazard';
 import fetch from "node-fetch";
 
 export function addHazards(array, page) {
-    const hazards = array.map(hazard => new Hazard({ name: hazard }));
+    const hazards = array.map(hazard => new Hazard(hazard));
     return Hazard.insertMany(hazards).then(() => {/* console.log('hazards added page: ', page)*/}).catch(error => console.log(error));
 }
 
@@ -30,27 +30,17 @@ export function getHazards(req, res) {
 }
 
 export const fetchHazardsFromPlatformToMongo = async (page = 0) => {
-    const API_KEY = 'db6a04e9-5df3-3f23-8f2a-28b81d1e3aa8';
-    const pageSize = 100;
-    const body = {
-        apikey: API_KEY,
-        pageSize,
-        detail: false,
-        page,
-        entityType: 'hazard'
-    };
 
-    const response = await fetch('http://api.foodakai.com/search-api-1.0/search/', {
+    const response = await fetch('http://148.251.22.254:8080/nlp-api-1.0/export/term/json?vocabulary=fdk_hazards', {
         method: 'POST',
         headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+        }
     });
     const json = await response.json();
 
-    const hazards = json.hits.hits.map(item => item._source.title);
+    const hazards = json.map(item => ({ name: item.label, parents: item.parent, synonyms: item.synonym }));
     addHazards(hazards, page);
     if (hazards && hazards.length > 0) {
         const currPage = ++page;
