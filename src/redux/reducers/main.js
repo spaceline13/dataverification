@@ -144,8 +144,8 @@ const main = (state = initialState, action) => {
 
             incidentsToSet.forEach(incident => {
                 incidents.push({ id: incident.dataId, date: incident.createdOn, internalId: incident.internalId, remoteProducts: incident.remoteProducts, remoteHazards: incident.remoteHazards });
-                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
-                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.map(item => item.name).includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.map(item => item.name).includes(hazard.value) ? hazard.value : null })) : [];
                 countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
                 suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.dataId] = incident.title;
@@ -188,8 +188,8 @@ const main = (state = initialState, action) => {
             const descriptions = { ...state.descriptions };
             incidentsToAdd.forEach(incident => {
                 incidents.push({ id: incident.dataId, date: incident.createdOn, internalId: incident.internalId, remoteProducts: incident.remoteProducts, remoteHazards: incident.remoteHazards });
-                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
-                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.map(item => item.name).includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.map(item => item.name).includes(hazard.value) ? hazard.value : null })) : [];
                 countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
                 suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.dataId] = incident.title;
@@ -233,7 +233,7 @@ const main = (state = initialState, action) => {
 
             // check incident's products array against Taxonomy and autofill
             productsArray.forEach(product => {
-                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy);
+                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy.map(item => item.name));
             });
 
             // remove all product tags
@@ -255,7 +255,7 @@ const main = (state = initialState, action) => {
             // already exists, don't add more
             if (!state.products[incident_id].find(pr => pr.original === product.original)) {
                 // check incident's product against Taxonomy and autofill
-                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy);
+                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy.map(item => item.name));
 
                 const products = { ...state.products, [incident_id]: [...state.products[incident_id], product] };
                 return {
@@ -281,7 +281,7 @@ const main = (state = initialState, action) => {
 
             // check incident's hazards array against Taxonomy and autofill
             hazardsArray.forEach(hazard => {
-                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy);
+                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy.map(item => item.name));
             });
 
             // remove all hazard tags
@@ -303,7 +303,7 @@ const main = (state = initialState, action) => {
             // already exists, don't add more
             if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
                 // check incident's hazard against Taxonomy and autofill
-                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy);
+                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy.map(item => item.name));
 
                 const hazards = { ...state.hazards, [incident_id]: [...state.hazards[incident_id], hazard] };
                 return {
