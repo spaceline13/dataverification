@@ -144,8 +144,8 @@ const main = (state = initialState, action) => {
 
             incidentsToSet.forEach(incident => {
                 incidents.push({ id: incident.dataId, date: incident.createdOn, internalId: incident.internalId, remoteProducts: incident.remoteProducts, remoteHazards: incident.remoteHazards });
-                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.map(item => item.name).includes(product.value) ? product.value : null })) : [];
-                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.map(item => item.name).includes(hazard.value) ? hazard.value : null })) : [];
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
                 countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
                 suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.dataId] = incident.title;
@@ -188,8 +188,8 @@ const main = (state = initialState, action) => {
             const descriptions = { ...state.descriptions };
             incidentsToAdd.forEach(incident => {
                 incidents.push({ id: incident.dataId, date: incident.createdOn, internalId: incident.internalId, remoteProducts: incident.remoteProducts, remoteHazards: incident.remoteHazards });
-                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.map(item => item.name).includes(product.value) ? product.value : null })) : [];
-                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.map(item => item.name).includes(hazard.value) ? hazard.value : null })) : [];
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
                 countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
                 suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.dataId] = incident.title;
