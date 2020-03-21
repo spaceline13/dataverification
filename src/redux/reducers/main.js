@@ -233,7 +233,7 @@ const main = (state = initialState, action) => {
 
             // check incident's products array against Taxonomy and autofill
             productsArray.forEach(product => {
-                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy.map(item => item.name));
+                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy);
             });
 
             // remove all product tags
@@ -255,7 +255,7 @@ const main = (state = initialState, action) => {
             // already exists, don't add more
             if (!state.products[incident_id].find(pr => pr.original === product.original)) {
                 // check incident's product against Taxonomy and autofill
-                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy.map(item => item.name));
+                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy);
 
                 const products = { ...state.products, [incident_id]: [...state.products[incident_id], product] };
                 return {
@@ -281,7 +281,7 @@ const main = (state = initialState, action) => {
 
             // check incident's hazards array against Taxonomy and autofill
             hazardsArray.forEach(hazard => {
-                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy.map(item => item.name));
+                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy);
             });
 
             // remove all hazard tags
@@ -303,7 +303,7 @@ const main = (state = initialState, action) => {
             // already exists, don't add more
             if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
                 // check incident's hazard against Taxonomy and autofill
-                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy.map(item => item.name));
+                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy);
 
                 const hazards = { ...state.hazards, [incident_id]: [...state.hazards[incident_id], hazard] };
                 return {
