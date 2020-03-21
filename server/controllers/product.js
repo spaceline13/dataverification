@@ -12,7 +12,7 @@ export function eraseProducts() {
 
 export function getProducts(req, res) {
     return Product.find()
-        .select('name')
+        .select('name parents synonyms')
         .then(allProducts => {
             return res.status(200).json({
                 success: true,

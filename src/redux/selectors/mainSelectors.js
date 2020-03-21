@@ -14,6 +14,6 @@ export const getIncidentsPagesLoaded = store => (getMainState(store) ? getMainSt
 
 // TAXONOMIES
 
-export const getProductsTaxonomy = store => (getMainState(store) ? getMainState(store).productsTaxonomy.map(item => item.name) : []);
-export const getHazardsTaxonomy = store => (getMainState(store) ? getMainState(store).hazardsTaxonomy.map(item => item.name) : []);
+export const getProductsTaxonomy = store => (getMainState(store) ? getMainState(store).productsTaxonomy : []);
+export const getHazardsTaxonomy = store => (getMainState(store) ? getMainState(store).hazardsTaxonomy : []);
 export const getCountriesTaxonomy = store => (getMainState(store) ? getMainState(store).countriesTaxonomy : []);

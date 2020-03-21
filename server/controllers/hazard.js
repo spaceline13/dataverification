@@ -12,7 +12,7 @@ export function eraseHazards() {
 
 export function getHazards(req, res) {
     return Hazard.find()
-        .select('name')
+        .select('name parents synonyms')
         .then(allHazards => {
             return res.status(200).json({
                 success: true,
