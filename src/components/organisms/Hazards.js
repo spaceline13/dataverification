@@ -48,15 +48,16 @@ const Hazards = ({ incident }) => {
 
         var reg = new RegExp(inputValue.split('').join('\\w*').replace(/\W/, ""), 'i');
         const results = inputLength === 0 ? [] : hazardsTaxonomy.filter(hz =>
-            hz.match(reg)
+            hz.name.match(reg)
         );
 
         return ({
             hits: {
-                hits: results.reverse().map(res => (
+                hits: results.sort((a, b) => (a.name.length < b.name.length ? -1 : 1)).map(res => (
                     {
                         ['_source']: {
-                            title: res
+                            title: res.name,
+                            parents: res.parents
                         }
                     }
                 ))
@@ -87,10 +88,11 @@ const Hazards = ({ incident }) => {
                             }}>{hazard.original}</Text>
                             <Box display={'inline-block'}>
                                 <RemoteAutocomplete
+                                    hasHierarchy
                                     noWait
                                     key={'product' + incident.id + index}
                                     variant={'outlined'}
-                                    onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.title : null)}
+                                    onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.name : null)}
                                     asyncFetchFunction={filterHazardsAutocomplete}
                                     placeholder={hazard.foodakai ? hazard.foodakai : 'Find hazard'}
                                 />

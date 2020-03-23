@@ -31,59 +31,66 @@ const initialState = {
     incidentsPagesLoaded: [],
 
     productsTaxonomy: [],
+    productsTaxonomyMain: [],
+    productsTaxonomySynonyms: [],
     hazardsTaxonomy: [],
+    hazardsTaxonomyMain: [],
+    hazardsTaxonomySynonyms: [],
     countriesTaxonomy: []
 };
 
 /* --------- UTILITY FUNCTIONS ---------- */
-const checkProductAgainstTaxonomyAndAutofill = (product, productsTaxonomy) => {
+const checkProductAgainstTaxonomyAndAutofill = (product, productsTaxonomyMain, productsTaxonomySynonyms, productsTaxonomy) => {
     if (!product.foodakai) {
         const original = product.original.toLowerCase();
-        let { bestMatch } = stringSimilarity.findBestMatch(original, productsTaxonomy);
+        let { bestMatch } = stringSimilarity.findBestMatch(original, productsTaxonomyMain);
 
         // transform , seperated ex. Beans, Dried => Dried Beans
         if (original.indexOf(', ') !== -1) {
             const array = original.split(', ').reverse();
-            const comma_bestMatch = stringSimilarity.findBestMatch(array.join(' '), productsTaxonomy).bestMatch;
+            const comma_bestMatch = stringSimilarity.findBestMatch(array.join(' '), productsTaxonomyMain).bestMatch;
             if (comma_bestMatch.rating > bestMatch.rating) bestMatch = comma_bestMatch;
+        }
+
+        //synonyms
+        if (bestMatch.rating < 0.9) {
+            const synonyms_check = stringSimilarity.findBestMatch(original, productsTaxonomySynonyms).bestMatch;
+            if ((synonyms_check.rating > bestMatch.rating) && (synonyms_check.rating > 0.78)) {
+                bestMatch = {
+                    rating: synonyms_check.rating,
+                    target: productsTaxonomy.find(product => product.synonyms.includes(synonyms_check.target)).name
+                };
+            }
         }
 
         if (bestMatch.rating > 0.78) product.foodakai = bestMatch.target;
         console.log(bestMatch);
     }
 };
-const checkHazardAgainstTaxonomyAndAutofill = (hazard, hazardsTaxonomy) => {
+const checkHazardAgainstTaxonomyAndAutofill = (hazard, hazardsTaxonomyMain, hazardsTaxonomySynonyms, hazardsTaxonomy) => {
     if (!hazard.foodakai) {
         const original = hazard.original.toLowerCase();
-        // specific hack for specific hazard
-        if ((original.indexOf('produced without') !== -1) && (original.indexOf('benefit')  !== -1) && (original.indexOf('inspection')  !== -1)) {
-            hazard.foodakai = 'unauthorised use of federal inspection mark';
-        } else { // check for matching
-            let {bestMatch} = stringSimilarity.findBestMatch(original, hazardsTaxonomy);
+        let {bestMatch} = stringSimilarity.findBestMatch(original, hazardsTaxonomyMain);
 
-            // transform f to ph and check
-            if (original.indexOf('f') !== -1) {
-                const ph_original = original.replace('f', 'ph');
-                const ph_bestMatch = stringSimilarity.findBestMatch(ph_original, hazardsTaxonomy).bestMatch;
-                if (ph_bestMatch.rating > bestMatch.rating) bestMatch = ph_bestMatch;
-            }
-
-            // transform f to ph and check
-            if (original.indexOf('ph') !== -1) {
-                const f_original = original.replace('ph', 'f');
-                const f_bestMatch = stringSimilarity.findBestMatch(f_original, hazardsTaxonomy).bestMatch;
-                if (f_bestMatch.rating > bestMatch.rating) bestMatch = f_bestMatch;
-            }
-
-            // check for string + 'products thereof' in hazards
-            if (bestMatch.rating < 0.8 && original.length > 3) {
-                const products_thereof_bestMatch = stringSimilarity.findBestMatch(original + ' and products thereof', hazardsTaxonomy).bestMatch;
-                if ((products_thereof_bestMatch.rating > 0.9) && (products_thereof_bestMatch.rating > bestMatch.rating)) bestMatch = products_thereof_bestMatch;
-            }
-
-            if (bestMatch.rating > 0.775) hazard.foodakai = bestMatch.target;
-            console.log(bestMatch);
+        // check for string + 'products thereof' in hazards
+        if (bestMatch.rating < 0.8 && original.length > 3) {
+            const products_thereof_bestMatch = stringSimilarity.findBestMatch(original + ' and products thereof', hazardsTaxonomyMain).bestMatch;
+            if ((products_thereof_bestMatch.rating > 0.9) && (products_thereof_bestMatch.rating > bestMatch.rating)) bestMatch = products_thereof_bestMatch;
         }
+
+        //synonyms
+        if (bestMatch.rating < 0.9) {
+            const synonyms_check = stringSimilarity.findBestMatch(original, hazardsTaxonomySynonyms).bestMatch;
+            if ((synonyms_check.rating > bestMatch.rating) && (synonyms_check.rating > 0.78)) {
+                bestMatch = {
+                    rating: synonyms_check.rating,
+                    target: hazardsTaxonomy.find(hazard => hazard.synonyms.includes(synonyms_check.target)).name
+                };
+            }
+        }
+
+        if (bestMatch.rating > 0.775) hazard.foodakai = bestMatch.target;
+        console.log(bestMatch);
     }
 };
 const removeTags = (tag, incident_id, array, titles, descriptions) => {
@@ -144,8 +151,8 @@ const main = (state = initialState, action) => {
 
             incidentsToSet.forEach(incident => {
                 incidents.push({ id: incident.dataId, date: incident.createdOn, internalId: incident.internalId, remoteProducts: incident.remoteProducts, remoteHazards: incident.remoteHazards });
-                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
-                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomyMain.includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomyMain.includes(hazard.value) ? hazard.value : null })) : [];
                 countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
                 suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.dataId] = incident.title;
@@ -188,8 +195,8 @@ const main = (state = initialState, action) => {
             const descriptions = { ...state.descriptions };
             incidentsToAdd.forEach(incident => {
                 incidents.push({ id: incident.dataId, date: incident.createdOn, internalId: incident.internalId, remoteProducts: incident.remoteProducts, remoteHazards: incident.remoteHazards });
-                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomy.includes(product.value) ? product.value : null })) : [];
-                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomy.includes(hazard.value) ? hazard.value : null })) : [];
+                products[incident.dataId] = incident.machineProducts ? incident.machineProducts.map(product => ({ original: product.value, foodakai: state.productsTaxonomyMain.includes(product.value) ? product.value : null })) : [];
+                hazards[incident.dataId] = incident.machineHazards ? incident.machineHazards.map(hazard => ({ original: hazard.value, foodakai: state.hazardsTaxonomyMain.includes(hazard.value) ? hazard.value : null })) : [];
                 countries[incident.dataId] = incident.originInfo ? incident.originInfo.map(origin => origin.country.value ? origin.country.value : origin.country.country) : [];
                 suppliers[incident.dataId] = incident.suppliers ? incident.suppliers.map(supplier => ({ title: supplier.title, id: supplier.id })) : [];
                 titles[incident.dataId] = incident.title;
@@ -233,7 +240,7 @@ const main = (state = initialState, action) => {
 
             // check incident's products array against Taxonomy and autofill
             productsArray.forEach(product => {
-                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy);
+                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomyMain, state.productsTaxonomySynonyms, state.productsTaxonomy);
             });
 
             // remove all product tags
@@ -255,7 +262,7 @@ const main = (state = initialState, action) => {
             // already exists, don't add more
             if (!state.products[incident_id].find(pr => pr.original === product.original)) {
                 // check incident's product against Taxonomy and autofill
-                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomy);
+                checkProductAgainstTaxonomyAndAutofill(product, state.productsTaxonomyMain, state.productsTaxonomySynonyms, state.productsTaxonomy);
 
                 const products = { ...state.products, [incident_id]: [...state.products[incident_id], product] };
                 return {
@@ -281,7 +288,7 @@ const main = (state = initialState, action) => {
 
             // check incident's hazards array against Taxonomy and autofill
             hazardsArray.forEach(hazard => {
-                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy);
+                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomyMain, state.hazardsTaxonomySynonyms, state.hazardsTaxonomy);
             });
 
             // remove all hazard tags
@@ -303,7 +310,7 @@ const main = (state = initialState, action) => {
             // already exists, don't add more
             if (!state.hazards[incident_id].find(hz => hz.original === hazard.original)) {
                 // check incident's hazard against Taxonomy and autofill
-                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomy);
+                checkHazardAgainstTaxonomyAndAutofill(hazard, state.hazardsTaxonomyMain, state.hazardsTaxonomySynonyms, state.hazardsTaxonomy);
 
                 const hazards = { ...state.hazards, [incident_id]: [...state.hazards[incident_id], hazard] };
                 return {
@@ -405,16 +412,35 @@ const main = (state = initialState, action) => {
         // TAXONOMIES
         case SET_PRODUCTS_TAXONOMY: {
             const { products } = action.payload;
+            let productsTaxonomyMain = [];
+            let productsTaxonomySynonyms = [];
+
+            products.forEach(product => {
+                productsTaxonomyMain.push(product.name);
+                if (product.synonyms && product.synonyms.length > 0) productsTaxonomySynonyms = [...productsTaxonomySynonyms, ...product.synonyms];
+            });
             return {
                 ...state,
                 productsTaxonomy: products,
+                productsTaxonomyMain,
+                productsTaxonomySynonyms
             };
         }
         case SET_HAZARDS_TAXONOMY: {
             const { hazards } = action.payload;
+            let hazardsTaxonomyMain = [];
+            let hazardsTaxonomySynonyms = [];
+
+            hazards.forEach(hazard => {
+                hazardsTaxonomyMain.push(hazard.name);
+                if (hazard.synonyms && hazard.synonyms.length > 0) hazardsTaxonomySynonyms = [...hazardsTaxonomySynonyms, ...hazard.synonyms];
+
+            });
             return {
                 ...state,
-                hazardsTaxonomy: hazards,
+                hazardsTaxonomy:hazards,
+                hazardsTaxonomyMain,
+                hazardsTaxonomySynonyms
             };
         }
         case SET_COUNTRIES_TAXOOMY: {

@@ -39,15 +39,16 @@ const Products = ({ incident }) => {
 
         var reg = new RegExp(inputValue.split('').join('\\w*').replace(/\W/, ""), 'i');
         const results = inputLength === 0 ? [] : productsTaxonomy.filter(pr =>
-            pr.match(reg)
+            pr.name.match(reg)
         );
 
         return ({
             hits: {
-                hits: results.reverse().map(res => (
+                hits: results.sort((a, b) => (a.name.length < b.name.length ? -1 : 1)).map(res => (
                     {
                         ['_source']: {
-                            title: res
+                            title: res.name,
+                            parents: res.parents
                         }
                     }
                 ))
@@ -80,10 +81,11 @@ const Products = ({ incident }) => {
                         }}>{product.original}</Text>
                         <Box display={'inline-block'}>
                             <RemoteAutocomplete
+                                hasHierarchy
                                 noWait
                                 key={'product' + incident.id + index}
                                 variant={'outlined'}
-                                onSelect={(value) => handleEditProduct(incident.id, product, value ? value.title : null)}
+                                onSelect={(value) => handleEditProduct(incident.id, product, value ? value.name : null)}
                                 asyncFetchFunction={filterProductsAutocomplete}
                                 placeholder={product.foodakai ? product.foodakai : 'Find product'}
                             />
