@@ -94,7 +94,7 @@ const Filters = ({ refreshDropdowns, setCurrentPage }) => {
 
     if (!(loadingCuration || loadingIncidents)) {
         return (
-            <Box display={'flex'} flexDirection={'row'} alignItems={'flex-start'} height={'50px'} mt={'20px'} mb={'20px'}>
+            <Box display={'flex'} flexDirection={'row'} alignItems={'flex-start'} height={'auto'} mt={'20px'} mb={'20px'}>
                 <Box style={{width: '-webkit-fill-available', margin: '0px 10px'}}>
                     <LocalAutocompleteMulti
                         selected={selectedRemoteProducts}
