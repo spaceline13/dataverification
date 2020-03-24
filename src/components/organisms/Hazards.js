@@ -92,7 +92,7 @@ const Hazards = ({ incident }) => {
                                     noWait
                                     key={'product' + incident.id + index}
                                     variant={'outlined'}
-                                    onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.name : null)}
+                                    onSelect={(value) => handleEditHazard(incident.id, hazard, value ? value.title : null)}
                                     asyncFetchFunction={filterHazardsAutocomplete}
                                     placeholder={hazard.foodakai ? hazard.foodakai : 'Find hazard'}
                                 />

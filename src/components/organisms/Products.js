@@ -85,7 +85,7 @@ const Products = ({ incident }) => {
                                 noWait
                                 key={'product' + incident.id + index}
                                 variant={'outlined'}
-                                onSelect={(value) => handleEditProduct(incident.id, product, value ? value.name : null)}
+                                onSelect={(value) => handleEditProduct(incident.id, product, value ? value.title : null)}
                                 asyncFetchFunction={filterProductsAutocomplete}
                                 placeholder={product.foodakai ? product.foodakai : 'Find product'}
                             />
