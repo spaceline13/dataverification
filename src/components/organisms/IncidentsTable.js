@@ -67,13 +67,13 @@ const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) =
 
 
     const handleEditCountry = (incident_id, country) => {
-        dispatch(editCountry(country ? country.value : [], incident_id));
+        dispatch(editCountry(country ? [country.value] : [], incident_id));
     };
     const handlePasteToNext = (incident, index) => {
         const nextIncident = incidents[index+1];
-        dispatch(replaceProducts(products[incident.id], nextIncident.id));
-        dispatch(replaceHazards(hazards[incident.id], nextIncident.id));
-        dispatch(editCountry(countries[incident.id], nextIncident.id));
+        dispatch(replaceProducts([...products[incident.id]], nextIncident.id));
+        dispatch(replaceHazards([...hazards[incident.id]], nextIncident.id));
+        dispatch(editCountry([...countries[incident.id]], nextIncident.id));
     };
 
     const handleApprove = incident_id => {
@@ -203,7 +203,7 @@ const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) =
                                                     classNamePrefix="select"
                                                     isClearable={true}
                                                     isSearchable={true}
-                                                    defaultValue={(countries[incident.id] && Array.isArray(countries[incident.id]) && countries[incident.id].length > 0) ? {
+                                                    value={(countries[incident.id] && Array.isArray(countries[incident.id]) && countries[incident.id].length > 0) ? {
                                                         value: countries[incident.id][0],
                                                         label: countries[incident.id][0]
                                                     } : null}
