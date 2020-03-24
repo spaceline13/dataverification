@@ -16,7 +16,7 @@ import {
     getTitles
 } from '../../redux/selectors/mainSelectors';
 import {
-    setApproved,editCountry
+    setApproved, editCountry, replaceProducts, replaceHazards
 } from '../../redux/actions/mainActions';
 import moment from "moment";
 import {MenuProvider} from "react-contexify";
@@ -68,6 +68,12 @@ const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) =
 
     const handleEditCountry = (incident_id, country) => {
         dispatch(editCountry(country ? country.value : [], incident_id));
+    };
+    const handlePasteToNext = (incident, index) => {
+        const nextIncident = incidents[index+1];
+        dispatch(replaceProducts(products[incident.id], nextIncident.id));
+        dispatch(replaceHazards(hazards[incident.id], nextIncident.id));
+        dispatch(editCountry(countries[incident.id], nextIncident.id));
     };
 
     const handleApprove = incident_id => {
@@ -226,6 +232,17 @@ const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) =
                                 <td>
                                     <Date>
                                         {moment(incident.date).format('DD-MM-YYYY')}
+                                        <i style={{
+                                            position: 'absolute',
+                                            top: '-2px',
+                                            left: '80px',
+                                            fontSize: '20px',
+                                            color: '#337ab7',
+                                            cursor: 'pointer'
+                                        }}
+                                           onClick={()=>handlePasteToNext(incident, indexI)}
+                                           className="fas fa-angle-double-right"
+                                        />
                                     </Date>
                                     {checked && (
                                         <div>
