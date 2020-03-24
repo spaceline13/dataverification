@@ -73,7 +73,7 @@ const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) =
         const nextIncident = currentPageItems[index+1];
         dispatch(replaceProducts([...products[incident.id]], nextIncident.id));
         dispatch(replaceHazards([...hazards[incident.id]], nextIncident.id));
-        dispatch(editCountry([...countries[incident.id]], nextIncident.id));
+        //dispatch(editCountry([...countries[incident.id]], nextIncident.id));
     };
 
     const handleApprove = incident_id => {
