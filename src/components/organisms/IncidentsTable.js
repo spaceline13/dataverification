@@ -70,7 +70,7 @@ const IncidentsTable = ({ user, onSaveIncident, currentPage, pageItemsCount }) =
         dispatch(editCountry(country ? [country.value] : [], incident_id));
     };
     const handlePasteToNext = (incident, index) => {
-        const nextIncident = incidents[index+1];
+        const nextIncident = currentPageItems[index+1];
         dispatch(replaceProducts([...products[incident.id]], nextIncident.id));
         dispatch(replaceHazards([...hazards[incident.id]], nextIncident.id));
         dispatch(editCountry([...countries[incident.id]], nextIncident.id));
